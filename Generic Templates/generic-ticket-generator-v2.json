@@ -1,0 +1,36 @@
+{
+  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "name": "Generic Ticket Generator V2",
+  "id": "com.dronapay.generic.ticketgenerator.v2",
+  "appliesTo": ["bpmn:ServiceTask"],
+  "description": "Config-driven ticket generator. Paste the full stage config JSON directly — no DB fetch required.",
+  "groups": [
+    {
+      "id": "configuration",
+      "label": "Configuration"
+    }
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "com.DronaPay.generic.delegates.GenericTicketIdGenerator_V2",
+      "binding": {
+        "type": "property",
+        "name": "camunda:class"
+      }
+    },
+    {
+      "label": "Stage Config (JSON)",
+      "description": "Paste the full stage config JSON here (steps + initialVariablesRootObj).",
+      "group": "configuration",
+      "type": "Text",
+      "binding": {
+        "type": "camunda:field",
+        "name": "stageConfig"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    }
+  ]
+}

@@ -4,17 +4,12 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_14w7cro</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_14w7cro" sourceRef="StartEvent_1" targetRef="Activity_15fu71b" />
+    <bpmn:sequenceFlow id="Flow_14w7cro" sourceRef="StartEvent_1" targetRef="Activity_0g6e4fy" />
     <bpmn:endEvent id="Event_1k8lbfd">
       <bpmn:incoming>Flow_0lxt7vk</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_085vzm3" sourceRef="Activity_15fu71b" targetRef="Activity_0ub2wih" />
-    <bpmn:serviceTask id="Activity_15fu71b" name="Hello World" camunda:class="com.DronaPay.frm.ruleCreation.HelloWorldDelegate">
-      <bpmn:incoming>Flow_14w7cro</bpmn:incoming>
-      <bpmn:outgoing>Flow_085vzm3</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:subProcess id="Activity_0ub2wih">
-      <bpmn:incoming>Flow_085vzm3</bpmn:incoming>
+      <bpmn:incoming>Flow_1axt5ei</bpmn:incoming>
       <bpmn:outgoing>Flow_0lxt7vk</bpmn:outgoing>
       <bpmn:startEvent id="Event_01ctvfx">
         <bpmn:outgoing>Flow_1bcykc0</bpmn:outgoing>
@@ -31,18 +26,99 @@
       </bpmn:serviceTask>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_0lxt7vk" sourceRef="Activity_0ub2wih" targetRef="Event_1k8lbfd" />
+    <bpmn:sequenceFlow id="Flow_1axt5ei" sourceRef="Activity_0g6e4fy" targetRef="Activity_0ub2wih" />
+    <bpmn:serviceTask id="Activity_0g6e4fy" name="Generate TicketID and Workflow Name" camunda:modelerTemplate="com.dronapay.generic.ticketgenerator.v2" camunda:class="com.DronaPay.generic.delegates.GenericTicketIdGenerator_V2">
+      <bpmn:extensionElements>
+        <camunda:field name="stageConfig">
+          <camunda:string>{
+  "steps": [
+    {
+      "key": "InsertTicketId",
+      "type": "SqlQueryExecution",
+      "config": {
+        "query": "INSERT INTO ui.ticketidgenerator(processinstanceid) VALUES (?)",
+        "queryType": "update",
+        "parameters": [
+          { "key": "processInstanceId", "type": "string" }
+        ]
+      }
+    },
+    {
+      "key": "GetTicketId",
+      "type": "SqlQueryExecution",
+      "config": {
+        "query": "SELECT ticketid FROM ui.ticketidgenerator WHERE processinstanceid = ?",
+        "queryType": "select",
+        "parameters": [
+          { "key": "processInstanceId", "type": "string" }
+        ]
+      },
+      "returnValueKey": "ticketid",
+      "returnValueObjKey": "TicketID",
+      "processVariablesToSetAfterExecution": [
+        { "key": "TicketID", "path": "TicketID" }
+      ]
+    },
+    {
+      "key": "FetchAccountAttribs",
+      "type": "SqlQueryExecution",
+      "config": {
+        "query": "select vcattribs from masters.accounts where vcexternalaccountid = ?",
+        "queryType": "select",
+        "parameters": [
+          { "key": "policy_id", "type": "string" }
+        ]
+      },
+      "returnValueKey": "vcattribs",
+      "returnValueObjKey": "accountAttribs",
+      "processVariablesToSetAfterExecution": [
+        { "key": "accountAttribs", "path": "vcattribs" }
+      ]
+    },
+    {
+      "key": "FetchVpaAttribs",
+      "type": "SqlQueryExecution",
+      "config": {
+        "query": "select v.vcattribs from masters.vpa as v join (select iaccountid from masters.accounts where vcexternalaccountid = ?) as a on v.iaccountid = a.iaccountid where v.vcexternaladdressid = ?",
+        "queryType": "select",
+        "parameters": [
+          { "key": "policy_id", "type": "string" },
+          { "key": "holder_name", "type": "string" }
+        ]
+      },
+      "returnValueKey": "vcattribs",
+      "returnValueObjKey": "vpaAttribs",
+      "processVariablesToSetAfterExecution": [
+        { "key": "vpaAttribs", "path": "vcattribs" }
+      ]
+    }
+  ],
+  "initialVariablesRootObj": [
+    { "key": "tenantId", "executionMethod": true },
+    { "key": "workflowKey", "executionMethod": true },
+    { "key": "processInstanceId", "executionMethod": true },
+    { "key": "stageName", "executionMethod": true },
+    { "key": "userInput", "processVariable": true },
+    { "key": "policy_id", "processVariable": true },
+    { "key": "holder_name", "processVariable": true }
+  ]
+}</camunda:string>
+        </camunda:field>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14w7cro</bpmn:incoming>
+      <bpmn:outgoing>Flow_1axt5ei</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RuleCreation">
       <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="182" y="162" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1kv2znm_di" bpmnElement="Activity_15fu71b">
-        <dc:Bounds x="270" y="140" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1k8lbfd_di" bpmnElement="Event_1k8lbfd">
         <dc:Bounds x="942" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1eobtzo_di" bpmnElement="Activity_0g6e4fy">
+        <dc:Bounds x="280" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0ub2wih_di" bpmnElement="Activity_0ub2wih" isExpanded="true">
         <dc:Bounds x="480" y="80" width="380" height="200" />
@@ -67,15 +143,15 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14w7cro_di" bpmnElement="Flow_14w7cro">
         <di:waypoint x="218" y="180" />
-        <di:waypoint x="270" y="180" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_085vzm3_di" bpmnElement="Flow_085vzm3">
-        <di:waypoint x="370" y="180" />
-        <di:waypoint x="480" y="180" />
+        <di:waypoint x="280" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0lxt7vk_di" bpmnElement="Flow_0lxt7vk">
         <di:waypoint x="860" y="180" />
         <di:waypoint x="942" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1axt5ei_di" bpmnElement="Flow_1axt5ei">
+        <di:waypoint x="380" y="180" />
+        <di:waypoint x="480" y="180" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
