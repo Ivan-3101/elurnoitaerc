@@ -1,0 +1,46 @@
+<configuration>
+
+    <property name="LOGS" value="/camunda/logs"/>
+    <property name="workflowName" value="healthclaim-casemanagement"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%green(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="RollingFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/${workflowName}.log</file>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
+        </encoder>
+
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily and when the file reaches 10 MegaBytes -->
+            <fileNamePattern>${LOGS}/archived/${workflowName}-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+          
+        </rollingPolicy>
+    </appender>
+
+
+    <!-- camunda -->
+    <logger name="org.camunda" level="info" />
+
+    <!-- common dependencies -->
+    <logger name="org.apache.ibatis" level="info" />
+    <logger name="javax.activation" level="info" />
+    <logger name="org.springframework" level="info" />
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="RollingFile" />
+    </root>
+
+</configuration>

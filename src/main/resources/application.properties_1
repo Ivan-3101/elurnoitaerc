@@ -1,0 +1,73 @@
+email.enable=true
+
+dummy.stub=false
+
+email.provider=api
+mail.smtp.host=smtp.office365.com
+mail.smtp.port=587
+mail.username=riskdocs.pinelabs.dit@outlook.com
+mail.password=Drona@1234
+mail.sender=Claim Team
+mail.smtp.auth=true
+mail.smtp.connectiontimeout=5000
+mail.smtp.timeout=5000
+mail.smtp.writetimeout=5000
+mail.smtp.starttls.enable=true
+
+token.filename=/mnt/d/docker_data/token.txt
+uiserver.auth.type=apikey
+
+
+uiserver.url=https://main.dev.dronapay.net
+uiserver.apikey=f877a5b1-b6d6-4733-9d2e-0509538e536e
+
+
+springapi.url=https://main.dev.dronapay.net/springapi
+springapi.api.key=4643a381-16e2-41c6-87ea-fac8df253dee
+
+
+agent.api.url=https://main.dev.dronapay.net/dia
+agent.api.username=batchuser
+agent.api.password=100!batch
+
+
+# Object Storage Configuration
+storage.provider=minio
+storage.minio.endpoint=http://host.docker.internal:9000
+storage.minio.accessKey=minioadmin
+storage.minio.secretKey=minioadmin123
+storage.minio.bucketName=insurance-claims
+storage.pathPattern={tenantId}/{workflowKey}/{ticketId}/{stageName}/
+
+
+# =============================================================
+# EMAIL CONFIGURATION (Generic Email Delegate)
+# =============================================================
+
+# Email Template IDs for Tenant 1
+email.approval.templateId=15
+email.rejection.templateId=14
+email.requestInfo.templateId=11
+email.reminder.templateId=12
+email.missingInfo.templateId=13
+
+# Email Variable Mappings
+# The process variable name that contains the recipient email address
+email.recipientVariable=sender_email
+
+# Body parameter mappings (template variable name -> process variable name)
+email.bodyParam.name=holder_name
+email.bodyParam.policyId=policy_id
+
+
+
+# FWA Review Email Template IDs
+email.requestFWAInfo.templateId=16
+email.fwaReminder.templateId=17
+email.fwaMissingInfo.templateId=18
+email.fwaRejection.templateId=19
+
+
+
+camunda.bpm.job-execution.core-pool-size=1
+camunda.bpm.job-execution.max-pool-size=1

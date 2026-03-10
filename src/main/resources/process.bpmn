@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1funpwf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="RuleCreation" name="Rule Creation" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_14w7cro</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_14w7cro" sourceRef="StartEvent_1" targetRef="Activity_15fu71b" />
+    <bpmn:endEvent id="Event_1k8lbfd">
+      <bpmn:incoming>Flow_0lxt7vk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_085vzm3" sourceRef="Activity_15fu71b" targetRef="Activity_0ub2wih" />
+    <bpmn:serviceTask id="Activity_15fu71b" name="Hello World" camunda:class="com.DronaPay.frm.ruleCreation.HelloWorldDelegate">
+      <bpmn:incoming>Flow_14w7cro</bpmn:incoming>
+      <bpmn:outgoing>Flow_085vzm3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:subProcess id="Activity_0ub2wih">
+      <bpmn:incoming>Flow_085vzm3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lxt7vk</bpmn:outgoing>
+      <bpmn:startEvent id="Event_01ctvfx">
+        <bpmn:outgoing>Flow_1bcykc0</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_1bcykc0" sourceRef="Event_01ctvfx" targetRef="PrintUserInput" />
+      <bpmn:endEvent id="Event_1b6lard">
+        <bpmn:incoming>Flow_0qoebua</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0qoebua" sourceRef="PrintUserInput" targetRef="Event_1b6lard" />
+      <bpmn:serviceTask id="PrintUserInput" name="Print User Input" camunda:class="com.DronaPay.frm.ruleCreation.PrintUserInputDelegate">
+        <bpmn:extensionElements />
+        <bpmn:incoming>Flow_1bcykc0</bpmn:incoming>
+        <bpmn:outgoing>Flow_0qoebua</bpmn:outgoing>
+      </bpmn:serviceTask>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_0lxt7vk" sourceRef="Activity_0ub2wih" targetRef="Event_1k8lbfd" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RuleCreation">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1kv2znm_di" bpmnElement="Activity_15fu71b">
+        <dc:Bounds x="270" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1k8lbfd_di" bpmnElement="Event_1k8lbfd">
+        <dc:Bounds x="942" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ub2wih_di" bpmnElement="Activity_0ub2wih" isExpanded="true">
+        <dc:Bounds x="480" y="80" width="380" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_01ctvfx_di" bpmnElement="Event_01ctvfx">
+        <dc:Bounds x="532" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1b6lard_di" bpmnElement="Event_1b6lard">
+        <dc:Bounds x="772" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_019ztt8_di" bpmnElement="PrintUserInput">
+        <dc:Bounds x="620" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1bcykc0_di" bpmnElement="Flow_1bcykc0">
+        <di:waypoint x="568" y="180" />
+        <di:waypoint x="620" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qoebua_di" bpmnElement="Flow_0qoebua">
+        <di:waypoint x="720" y="180" />
+        <di:waypoint x="772" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14w7cro_di" bpmnElement="Flow_14w7cro">
+        <di:waypoint x="218" y="180" />
+        <di:waypoint x="270" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_085vzm3_di" bpmnElement="Flow_085vzm3">
+        <di:waypoint x="370" y="180" />
+        <di:waypoint x="480" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lxt7vk_di" bpmnElement="Flow_0lxt7vk">
+        <di:waypoint x="860" y="180" />
+        <di:waypoint x="942" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

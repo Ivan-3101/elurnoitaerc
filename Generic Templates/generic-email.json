@@ -1,0 +1,96 @@
+{
+  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "name": "Generic Email Task",
+  "id": "com.dronapay.generic.email",
+  "appliesTo": [
+    "bpmn:SendTask"
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "com.DronaPay.generic.delegates.GenericEmailTask",
+      "binding": {
+        "type": "property",
+        "name": "camunda:class"
+      }
+    },
+    {
+      "label": "Template ID",
+      "description": "Email template ID from ui.emailtemplate table",
+      "type": "String",
+      "binding": {
+        "type": "camunda:field",
+        "name": "templateId"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Recipient Email",
+      "description": "Email address or process variable (e.g. ${sender_email})",
+      "type": "String",
+      "binding": {
+        "type": "camunda:field",
+        "name": "recipientEmail"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "CC Emails",
+      "description": "Comma-separated emails or variables (optional, use NA if none)",
+      "type": "String",
+      "value": "NA",
+      "binding": {
+        "type": "camunda:field",
+        "name": "ccEmails"
+      }
+    },
+    {
+      "label": "BCC Emails",
+      "description": "Comma-separated emails or variables (optional, use NA if none)",
+      "type": "String",
+      "value": "NA",
+      "binding": {
+        "type": "camunda:field",
+        "name": "bccEmails"
+      }
+    },
+    {
+      "label": "Body Parameters (JSON)",
+      "description": "JSON object with template variables. Example: {\"name\": \"${holder_name}\", \"policyId\": \"${policy_id}\"}",
+      "type": "Text",
+      "value": "{}",
+      "binding": {
+        "type": "camunda:field",
+        "name": "bodyParams"
+      }
+    },
+    {
+      "label": "Enable Auto-Response",
+      "description": "Enable automatic message correlation for testing",
+      "type": "Dropdown",
+      "choices": [
+        { "name": "true", "value": "true" },
+        { "name": "false", "value": "false" }
+      ],
+      "value": "false",
+      "binding": {
+        "type": "camunda:field",
+        "name": "enableAutoResponse"
+      }
+    },
+    {
+      "label": "Auto-Response Message Name",
+      "description": "Camunda message name to correlate (e.g. fwaInfoResponse, use NA if none)",
+      "type": "String",
+      "value": "NA",
+      "binding": {
+        "type": "camunda:field",
+        "name": "autoResponseMessage"
+      }
+    }
+  ]
+}

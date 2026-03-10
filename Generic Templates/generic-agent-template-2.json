@@ -1,0 +1,111 @@
+{
+  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "name": "Generic Agent Task v2",
+  "id": "com.dronapay.generic.agent.v2",
+  "appliesTo": [
+    "bpmn:ServiceTask"
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "com.DronaPay.generic.delegates.GenericAgentDelegate",
+      "binding": {
+        "type": "property",
+        "name": "camunda:class"
+      }
+    },
+    {
+      "label": "Agent ID",
+      "description": "Unique ID for this agent (e.g. forgeryagent)",
+      "type": "String",
+      "binding": {
+        "type": "camunda:field",
+        "name": "agentId"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Base URL",
+      "description": "Select the API base URL",
+      "type": "Dropdown",
+      "choices": [
+        {
+          "name": "DIA Agent API",
+          "value": "dia"
+        }
+      ],
+      "value": "dia",
+      "binding": {
+        "type": "camunda:field",
+        "name": "baseUrl"
+      }
+    },
+    {
+      "label": "Route",
+      "description": "Enter the API route (e.g. agent, policy)",
+      "type": "String",
+      "value": "agent",
+      "binding": {
+        "type": "camunda:field",
+        "name": "route"
+      }
+    },
+    {
+      "label": "Authentication",
+      "description": "Select authentication method",
+      "type": "Dropdown",
+      "choices": [
+        {
+          "name": "Basic Auth",
+          "value": "basicAuth"
+        }
+      ],
+      "value": "basicAuth",
+      "binding": {
+        "type": "camunda:field",
+        "name": "authType"
+      }
+    },
+    {
+      "label": "HTTP Method",
+      "type": "Dropdown",
+      "choices": [
+        {
+          "name": "POST",
+          "value": "POST"
+        },
+        {
+          "name": "GET",
+          "value": "GET"
+        }
+      ],
+      "value": "POST",
+      "binding": {
+        "type": "camunda:field",
+        "name": "method"
+      }
+    },
+    {
+      "label": "Input Parameters (JSON)",
+      "description": "JSON Array of inputs. Types: 'value', 'minioFile', 'minioJson'. Example: [{\"key\": \"base64_img\", \"type\": \"minioFile\", \"value\": \"${documentPaths[attachment]}\"}]",
+      "type": "Text",
+      "value": "[]",
+      "binding": {
+        "type": "camunda:field",
+        "name": "inputParams"
+      }
+    },
+    {
+      "label": "Output Mapping (JSON)",
+      "description": "Unified output config. Each key is the output name. Use storeIn: processVariable to set a Camunda variable, or storeIn: objectStorage to save to MinIO. Supports mergeVariables to combine multiple paths into one object. Available root keys: agentId, statusCode, success, rawResponse, extractedData, timestamp. See template docs for full format.",
+      "type": "Text",
+      "value": "{}",
+      "binding": {
+        "type": "camunda:field",
+        "name": "outputMapping"
+      }
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "name": "Generic API Call",
+  "id": "com.dronapay.generic.apicall",
+  "appliesTo": [
+    "bpmn:ServiceTask"
+  ],
+  "description": "Makes a generic HTTP call. Request body is built from a single inputParams JSON Array (identical pattern to Generic Agent Task). Supports unified output mapping (Patterns A/B/C/D).",
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "com.DronaPay.generic.delegates.GenericApiCallDelegate",
+      "binding": {
+        "type": "property",
+        "name": "camunda:class"
+      }
+    },
+    {
+      "label": "Base URL",
+      "description": "Select the API base URL",
+      "type": "Dropdown",
+      "choices": [
+        { "name": "Spring API", "value": "springapi" }
+      ],
+      "value": "springapi",
+      "binding": {
+        "type": "camunda:field",
+        "name": "baseUrl"
+      }
+    },
+    {
+      "label": "Route",
+      "description": "API route. Supports process variables. e.g. /accounts/${processVariable.policy_id}",
+      "type": "String",
+      "binding": {
+        "type": "camunda:field",
+        "name": "route"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Authentication",
+      "description": "Select authentication method",
+      "type": "Dropdown",
+      "choices": [
+        { "name": "X-API-Key", "value": "xApiKey" }
+      ],
+      "value": "xApiKey",
+      "binding": {
+        "type": "camunda:field",
+        "name": "authType"
+      }
+    },
+    {
+      "label": "Method",
+      "type": "Dropdown",
+      "choices": [
+        { "name": "GET",    "value": "GET"    },
+        { "name": "POST",   "value": "POST"   },
+        { "name": "PUT",    "value": "PUT"    },
+        { "name": "DELETE", "value": "DELETE" }
+      ],
+      "value": "GET",
+      "binding": {
+        "type": "camunda:field",
+        "name": "method"
+      }
+    },
+    {
+      "label": "Input Parameters (JSON)",
+      "description": "Defines the request body. Three modes:\n\n══ MODE 1: Raw JSON body (paste directly, no array needed) ══\nPaste your JSON body as-is. All ${...} placeholders are resolved.\nUse this for FWA, CC, or any pre-formed JSON POST body.\n{\n  \"reqid\": \"${fn.uuid}\",\n  \"org\": \"SIT\",\n  \"ts\": \"${fn.isoTimestamp}\",\n  ...\n}\n\n══ MODE 2: Array of typed entries (build body from parts) ══\nUse when you need to mix direct values, MinIO files, or MinIO JSON.\n\n  type=value + key → adds key/value pair to body object\n  [{\"key\": \"policy_id\", \"type\": \"value\", \"value\": \"${processVariable.policy_id}\"}]\n\n  type=minioFile + key → downloads file, base64-encodes, adds under key\n  [{\"key\": \"document\", \"type\": \"minioFile\", \"value\": \"${documentPath}\"}]\n\n  type=minioJson + key → downloads JSON file, extracts at sourceJsonPath, adds under key\n  [{\"key\": \"attribs\", \"type\": \"minioJson\", \"value\": \"${attribsMinioPath}\", \"sourceJsonPath\": \"$.attribs\"}]\n\n══ MODE 3: No body (GET requests) ══\nLeave as [] or empty.",
+      "type": "Text",
+      "value": "[]",
+      "binding": {
+        "type": "camunda:field",
+        "name": "inputParams"
+      }
+    },
+    {
+      "label": "Output Variable Name",
+      "description": "Name of the process variable to store the full JSON response. Also auto-populates {name}_minioPath with the MinIO storage path.",
+      "type": "String",
+      "value": "apiResponse",
+      "binding": {
+        "type": "camunda:field",
+        "name": "outputVar"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "label": "Output Mapping (JSON)",
+      "description": "Unified output config. Each key is the output name. Supports 4 patterns:\n\nPATTERN A — single path → process variable:\n{\"myVar\": {\"storeIn\": \"processVariable\", \"dataType\": \"string\", \"path\": \"$.verified\"}}\n\nPATTERN B — single path → MinIO file:\n{\"myFile\": {\"storeIn\": \"objectStorage\", \"path\": \"$.attribs\", \"targetPath\": \"1/${workflowKey}/${TicketID}/stage/attribs.json\", \"targetVarName\": \"attribsMinioPath\"}}\n\nPATTERN C — merge multiple sources → process variable:\n{\"summary\": {\"storeIn\": \"processVariable\", \"mergeVariables\": true, \"mergePaths\": [{\"keyName\": \"holderName\", \"sourceType\": \"responseJson\", \"path\": \"$.accountName\"}, {\"keyName\": \"risk\", \"sourceType\": \"processVariable\", \"variableName\": \"RiskScore\"}, {\"keyName\": \"doc\", \"sourceType\": \"minioFile\", \"sourcePath\": \"1/${workflowKey}/${TicketID}/stage/doc.json\", \"path\": \"$\"}]}}\n\nPATTERN D — merge multiple sources → MinIO file:\n{\"report\": {\"storeIn\": \"objectStorage\", \"mergeVariables\": true, \"targetPath\": \"1/${workflowKey}/${TicketID}/stage/report.json\", \"targetVarName\": \"reportMinioPath\", \"mergePaths\": [...]}}\n\nEnter {} to skip.",
+      "type": "Text",
+      "value": "{}",
+      "binding": {
+        "type": "camunda:field",
+        "name": "outputMapping"
+      }
+    }
+  ]
+}

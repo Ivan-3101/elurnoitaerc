@@ -1,0 +1,39 @@
+{
+  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "name": "Generic Ticket Generator",
+  "id": "com.dronapay.generic.ticketgenerator",
+  "appliesTo": [
+    "bpmn:ServiceTask"
+  ],
+  "description": "Data-driven ticket generator. Configuration is fetched from the database using the Config Key.",
+  "groups": [
+    {
+      "id": "configuration",
+      "label": "Configuration"
+    }
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "com.DronaPay.generic.delegates.GenericTicketIdGenerator",
+      "binding": {
+        "type": "property",
+        "name": "camunda:class"
+      }
+    },
+    {
+      "label": "Configuration Key",
+      "description": "The key used to fetch the JSON configuration from ui.workflowmasters (e.g., 'Generate TicketID and Workflow Name').",
+      "group": "configuration",
+      "type": "String",
+      "binding": {
+        "type": "camunda:field",
+        "name": "configKey",
+        "expression": true
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    }
+  ]
+}
