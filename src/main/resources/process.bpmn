@@ -170,7 +170,7 @@
       <bpmn:sequenceFlow id="Flow_0rw7fbe" sourceRef="Activity_13uk4oo" targetRef="Orchestrator" />
       <bpmn:sequenceFlow id="Flow_1scutn9" sourceRef="Orchestrator" targetRef="Gateway_12sh51j" />
       <bpmn:sequenceFlow id="Flow_1epidy7" name="CONTINUE / RETRY_STEP" sourceRef="Gateway_12sh51j" targetRef="Generic_Agent">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orchestratorAction == 'CONTINUE'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orchestratorAction == 'CONTINUE' || orchestratorAction == 'RETRY_STEP'}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_1vty2u8" name="GO_USER_TASK" sourceRef="Gateway_12sh51j" targetRef="Activity_13uk4oo">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orchestratorAction == 'GO_USER_TASK'}</bpmn:conditionExpression>
