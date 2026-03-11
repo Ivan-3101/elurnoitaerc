@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1funpwf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1funpwf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
   <bpmn:process id="RuleCreation" name="Rule Creation" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_14w7cro</bpmn:outgoing>
@@ -136,11 +136,11 @@
             <camunda:inputParameter name="stage7MaxRetries">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage7OnFailure">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage7OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"wiring-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage1Type">execution-mode</camunda:inputParameter>
             <camunda:inputParameter name="stage1AgentId">execution-mode-agent</camunda:inputParameter>
             <camunda:inputParameter name="stage1AllowUserInput">true</camunda:inputParameter>
             <camunda:inputParameter name="stage1MaxRetries">3</camunda:inputParameter>
             <camunda:inputParameter name="stage1OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage1Type">execution-mode</camunda:inputParameter>
           </camunda:inputOutput>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0vgn3zw</bpmn:incoming>
@@ -169,9 +169,15 @@
       <bpmn:sequenceFlow id="Flow_0l43wcn" sourceRef="Generic_Agent" targetRef="Orchestrator" />
       <bpmn:sequenceFlow id="Flow_0rw7fbe" sourceRef="Activity_13uk4oo" targetRef="Orchestrator" />
       <bpmn:sequenceFlow id="Flow_1scutn9" sourceRef="Orchestrator" targetRef="Gateway_12sh51j" />
-      <bpmn:sequenceFlow id="Flow_1epidy7" name="CONTINUE / RETRY_STEP" sourceRef="Gateway_12sh51j" targetRef="Generic_Agent" />
-      <bpmn:sequenceFlow id="Flow_1vty2u8" name="GO_USER_TASK" sourceRef="Gateway_12sh51j" targetRef="Activity_13uk4oo" />
-      <bpmn:sequenceFlow id="Flow_148cdqt" name="EXIT" sourceRef="Gateway_12sh51j" targetRef="Event_07kupp5" />
+      <bpmn:sequenceFlow id="Flow_1epidy7" name="CONTINUE / RETRY_STEP" sourceRef="Gateway_12sh51j" targetRef="Generic_Agent">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orchestratorAction == 'CONTINUE'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_1vty2u8" name="GO_USER_TASK" sourceRef="Gateway_12sh51j" targetRef="Activity_13uk4oo">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orchestratorAction == 'GO_USER_TASK'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_148cdqt" name="EXIT" sourceRef="Gateway_12sh51j" targetRef="Event_07kupp5">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orchestratorAction == 'EXIT'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_0hkcf7q" sourceRef="Activity_1h0xj8c" targetRef="Event_1k8lbfd" />
   </bpmn:process>
@@ -254,13 +260,13 @@
         <di:waypoint x="218" y="340" />
         <di:waypoint x="280" y="340" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1axt5ei_di" bpmnElement="Flow_1axt5ei">
-        <di:waypoint x="380" y="340" />
-        <di:waypoint x="430" y="340" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0hkcf7q_di" bpmnElement="Flow_0hkcf7q">
         <di:waypoint x="1030" y="340" />
         <di:waypoint x="1192" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1axt5ei_di" bpmnElement="Flow_1axt5ei">
+        <di:waypoint x="380" y="340" />
+        <di:waypoint x="430" y="340" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
