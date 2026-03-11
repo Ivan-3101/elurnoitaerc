@@ -1,25 +1,17 @@
 {
-  "variables": {
-    "holder_name": {
-      "value": "Ash_01",
-      "type": "String"
+    "variables": {
+        "userInput": {
+            "value": "Block UPI transactions above 5000",
+            "type": "String"
+        },
+        "holder_name": {
+            "value": "Ashish_Singhal",
+            "type": "String"
+        },
+        "policy_id": {
+            "value": "HDFCDL123678BK",
+            "type": "String"
+        }
     },
-    "policy_id": {
-      "value": "DP123",
-      "type": "String"
-    },
-    "sender_email": {
-      "value": "ivan.d@dronapay.com",
-      "type": "String"
-    },
-    "docs": {
-      "value": "[{\"filename\":\"Doc1.pdf\",\"mimetype\":\"application/pdf\",\"encoding\":\"base64\",\"content\":\"<BASE64_CONTENT_DOC1_PLACEHOLDER>\"}, {\"filename\":\"Doc2.pdf\",\"mimetype\":\"application/pdf\",\"encoding\":\"base64\",\"content\":\"<BASE64_CONTENT_DOC2_PLACEHOLDER>\"}, {\"filename\":\"Doc3.pdf\",\"mimetype\":\"application/pdf\",\"encoding\":\"base64\",\"content\":\"<BASE64_CONTENT_DOC3_PLACEHOLDER>\"}]",
-      "type": "Object",
-      "valueInfo": {
-        "serializationDataFormat": "application/json",
-        "objectTypeName": "java.util.ArrayList"
-      }
-    }
-  },
-  "businessKey": "{{$randomUUID}}"
+    "businessKey": "{{$randomUUID}}"
 }
