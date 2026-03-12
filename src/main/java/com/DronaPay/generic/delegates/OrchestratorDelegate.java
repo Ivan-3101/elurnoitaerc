@@ -199,6 +199,7 @@ public class OrchestratorDelegate implements JavaDelegate {
                 if (nextIndex >= totalSteps) {
                     context.put("workflowStatus", "DONE");   // ← add this
                     uploadContext(storage, contextPath, context);  // ← move after status set
+                    execution.setVariable("currentStepIndex",   nextIndex); // sync process var
                     execution.setVariable("orchestratorAction", "EXIT");
                     execution.setVariable("workflowStatus", "DONE");
                 } else {

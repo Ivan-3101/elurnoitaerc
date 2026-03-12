@@ -46,7 +46,10 @@ import java.util.Properties;
  *   - agentAction, agentStatus, agentQuestions, agentMissingFields, agentConfidence
  *
  * MinIO files written per outputMapping entries with type="minio":
- *   - {tenantId}/RuleCreation/{ticketId}/{key}.json
+ *   - {tenantId}/RuleCreation/{ticketId}/{Stage Folder}/{key}_run{n}.json
+ *
+ * Stage folder is derived from stageType in currentStepConfig ("execution-mode" → "Execution Mode").
+ * Run counter n starts at 1 and increments each time this delegate executes for the same agent.
  *
  * DIA call payload format:
  *   POST {agent.api.url}/agent
@@ -87,7 +90,15 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
         Properties props       = TenantPropertiesUtil.getTenantProps(tenantId);
         StorageProvider storage = ObjectStorageService.getStorageProvider(tenantId);
 
-        // ── 1. Fetch latest context.json from MinIO ───────────────────────────
+        // ── 1. Derive stage folder and run counter ────────────────────────────
+        // Stage folder: "execution-mode" → "Execution Mode", used as MinIO subfolder.
+        // Run counter: tracks how many times this agent has been called in this instance.
+        String stageType   = stepConfig.optString("stageType", "unknown");
+        String stageFolder = toDisplayName(stageType);
+        int    runCount    = incrementRunCount(execution, agentId);
+        log.info("Stage folder='{}' | run={}", stageFolder, runCount);
+
+        // ── 2. Fetch latest context.json from MinIO ───────────────────────────
         String contextPath = tenantId + "/" + WORKFLOW_KEY + "/" + ticketId + "/" + CONTEXT_FILE;
         String contextJson;
         try (InputStream is = storage.downloadDocument(contextPath)) {
@@ -99,7 +110,7 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
         }
         log.debug("context.json fetched ({} chars)", contextJson.length());
 
-        // ── 2. Build DIA request payload ──────────────────────────────────────
+        // ── 3. Build DIA request payload ──────────────────────────────────────
         JSONObject contextObj;
         try {
             contextObj = new JSONObject(contextJson);
@@ -117,7 +128,7 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
         String requestBody = payload.toString();
         log.info("DIA payload built for agentId={} | context keys={}", agentId, contextObj.keySet());
 
-        // ── 3. Call DIA endpoint ──────────────────────────────────────────────
+        // ── 4. Call DIA endpoint ──────────────────────────────────────────────
         String baseUrl = props.getProperty(DIA_PROP_KEY);
         if (baseUrl == null || baseUrl.trim().isEmpty()) {
             throw new BpmnError("CONFIG_ERROR",
@@ -147,12 +158,13 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
 
         log.info("DIA response received for agentId={} ({} chars)", agentId, responseBody.length());
 
-        // ── 4. Set lastAgentResult (always — OrchestratorDelegate reads this) ─
+        // ── 5. Set lastAgentResult (always — OrchestratorDelegate reads this) ─
         execution.setVariable("lastAgentResult", responseBody);
 
-        // ── 5. Save raw response to MinIO ─────────────────────────────────────
+        // ── 6. Save raw response to MinIO under stage folder ──────────────────
+        // Path: {tenantId}/RuleCreation/{ticketId}/{Stage Folder}/{agentId}_output_run{n}.json
         String rawOutputPath = tenantId + "/" + WORKFLOW_KEY + "/" + ticketId + "/"
-                + agentId + "_output.json";
+                + stageFolder + "/" + agentId + "_output_run" + runCount + ".json";
         try {
             storage.uploadDocument(rawOutputPath,
                     responseBody.getBytes(StandardCharsets.UTF_8), "application/json");
@@ -161,7 +173,7 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
             log.warn("Could not save raw agent output to MinIO — continuing. Reason: {}", e.getMessage());
         }
 
-        // ── 6. Process outputMapping ──────────────────────────────────────────
+        // ── 7. Process outputMapping ──────────────────────────────────────────
         // outputMapping is a JSON array in currentStepConfig:
         //   [{"type":"var",   "key":"agentAction",       "jsonPath":"$.action"},
         //    {"type":"minio", "key":"execution-mode-agent_output", "jsonPath":"$"}]
@@ -184,9 +196,9 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
         }
 
         processOutputMapping(outputMapping, agentResponse, execution, storage,
-                tenantId, ticketId);
+                tenantId, ticketId, stageFolder, runCount);
 
-        log.info("=== OrchestratorAgentDelegate Complete | agentId={} ===", agentId);
+        log.info("=== OrchestratorAgentDelegate Complete | agentId={} | run={} ===", agentId, runCount);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -199,11 +211,13 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
      * type="var"   → extracts value using jsonPath from agent response,
      *                sets as Camunda process variable under "key"
      * type="minio" → extracts value using jsonPath from agent response,
-     *                saves as JSON to MinIO at {tenantId}/RuleCreation/{ticketId}/{key}.json
+     *                saves as JSON to MinIO at:
+     *                {tenantId}/RuleCreation/{ticketId}/{Stage Folder}/{key}_run{n}.json
      */
     private void processOutputMapping(JSONArray outputMapping, JSONObject agentResponse,
                                       DelegateExecution execution, StorageProvider storage,
-                                      String tenantId, String ticketId) {
+                                      String tenantId, String ticketId,
+                                      String stageFolder, int runCount) {
 
         for (int i = 0; i < outputMapping.length(); i++) {
             JSONObject entry = outputMapping.optJSONObject(i);
@@ -222,9 +236,9 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
                 Object extracted = extractByJsonPath(agentResponse, jsonPath);
 
                 if ("minio".equalsIgnoreCase(type)) {
-                    // Save to MinIO
+                    // Save to MinIO under stage folder with run number
                     String minioPath = tenantId + "/" + WORKFLOW_KEY + "/" + ticketId
-                            + "/" + key + ".json";
+                            + "/" + stageFolder + "/" + key + "_run" + runCount + ".json";
                     String content = toJsonString(extracted);
                     storage.uploadDocument(minioPath,
                             content.getBytes(StandardCharsets.UTF_8), "application/json");
@@ -283,6 +297,36 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
     // ═══════════════════════════════════════════════════════════════════════════
     // JSON HELPERS
     // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * Converts a stageType slug into a human-readable folder name by splitting on "-"
+     * and capitalising each word.
+     * Examples: "execution-mode" → "Execution Mode", "product-class" → "Product Class"
+     */
+    private String toDisplayName(String stageType) {
+        if (stageType == null || stageType.isEmpty()) return "Unknown";
+        StringBuilder sb = new StringBuilder();
+        for (String part : stageType.split("-")) {
+            if (!part.isEmpty()) {
+                sb.append(Character.toUpperCase(part.charAt(0)))
+                        .append(part.substring(1))
+                        .append(" ");
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Reads {agentId}_runCount from process variables, increments by 1, saves it back,
+     * and returns the new value. Returns 1 on the first call for this agent.
+     */
+    private int incrementRunCount(DelegateExecution execution, String agentId) {
+        String varName  = agentId + "_runCount";
+        Object existing = execution.getVariable(varName);
+        int newCount    = (existing != null) ? (Integer.parseInt(existing.toString()) + 1) : 1;
+        execution.setVariable(varName, newCount);
+        return newCount;
+    }
 
     /**
      * Simple jsonPath extraction from a JSONObject.
