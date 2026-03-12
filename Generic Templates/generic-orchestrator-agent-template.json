@@ -1,0 +1,19 @@
+[
+  {
+    "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+    "name": "Orchestrator Agent Task",
+    "id": "com.dronapay.generic.orchestrator.agent",
+    "appliesTo": ["bpmn:ServiceTask"],
+    "description": "Generic Agent Task for the Orchestrator loop. All configuration (agentId, outputMapping) is injected at runtime via process variables set by OrchestratorDelegate. No fields required from the modeller.",
+    "properties": [
+      {
+        "type": "Hidden",
+        "value": "com.DronaPay.generic.delegates.OrchestratorAgentDelegate",
+        "binding": {
+          "type": "property",
+          "name": "camunda:class"
+        }
+      }
+    ]
+  }
+]

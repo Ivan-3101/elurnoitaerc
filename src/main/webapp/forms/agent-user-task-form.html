@@ -1,0 +1,208 @@
+<form name="agentUserTaskForm">
+    <script cam-script type="text/form-script">
+        $scope.questions     = [];
+        $scope.missingFields = [];
+        $scope.answers       = {};
+        $scope.agentId       = '';
+        $scope.loading       = true;
+
+        camForm.on('form-loaded', function() {
+            camForm.variableManager.fetchVariable('agentQuestions');
+            camForm.variableManager.fetchVariable('agentMissingFields');
+            camForm.variableManager.fetchVariable('currentAgentId');
+
+            // Create userAnswers variable so Camunda knows to submit it
+            camForm.variableManager.createVariable({
+                name:  'userAnswers',
+                type:  'String',
+                value: '{}'
+            });
+        });
+
+        camForm.on('variables-fetched', function() {
+            // Parse agentQuestions
+            var questionsVar = camForm.variableManager.variables.agentQuestions;
+            if (questionsVar && questionsVar.value) {
+                try {
+                    $scope.questions = JSON.parse(questionsVar.value);
+                } catch(e) {
+                    console.error('Could not parse agentQuestions:', e);
+                    $scope.questions = [];
+                }
+            }
+
+            // Parse agentMissingFields
+            var fieldsVar = camForm.variableManager.variables.agentMissingFields;
+            if (fieldsVar && fieldsVar.value) {
+                try {
+                    $scope.missingFields = JSON.parse(fieldsVar.value);
+                } catch(e) {
+                    console.error('Could not parse agentMissingFields:', e);
+                    $scope.missingFields = [];
+                }
+            }
+
+            // Read agent ID for display
+            var agentIdVar = camForm.variableManager.variables.currentAgentId;
+            $scope.agentId = (agentIdVar && agentIdVar.value) ? agentIdVar.value : 'Agent';
+
+            // Initialise answers map with empty strings
+            $scope.missingFields.forEach(function(fieldKey) {
+                $scope.answers[fieldKey] = '';
+            });
+
+            $scope.loading = false;
+            console.log('Form loaded | questions:', $scope.questions,
+                        '| fields:', $scope.missingFields);
+        });
+
+        camForm.on('submit', function() {
+            console.log('=== Agent User Task Submit ===');
+
+            // Read current DOM values into answers map
+            $scope.missingFields.forEach(function(fieldKey) {
+                var el = document.getElementById('field_' + fieldKey);
+                if (el) {
+                    $scope.answers[fieldKey] = el.value;
+                    console.log('Field:', fieldKey, '=', el.value);
+                }
+            });
+
+            // Serialise the whole map and store as single userAnswers variable
+            var answersJson = JSON.stringify($scope.answers);
+            camForm.variableManager.variableValue('userAnswers', answersJson);
+            console.log('userAnswers set:', answersJson);
+        });
+    </script>
+
+    <style>
+        .uat-container {
+            max-width: 700px;
+            margin: 20px auto;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .uat-header {
+            padding: 14px 18px;
+            background: #5b176d;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 0;
+        }
+        .uat-header h2 {
+            margin: 0;
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+        }
+        .uat-header .agent-name {
+            font-size: 12px;
+            color: #e1bee7;
+            margin-top: 3px;
+        }
+        .uat-body {
+            border: 1px solid #d0a0dc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            padding: 20px;
+            background: #fff;
+        }
+        .uat-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin: 0 0 18px 0;
+        }
+        .uat-field-group {
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            background: #faf5fc;
+            border: 1px solid #d8b4e2;
+            border-left: 4px solid #5b176d;
+            border-radius: 4px;
+        }
+        .uat-field-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a1060;
+            margin-bottom: 8px;
+        }
+        .uat-field-key {
+            font-size: 10px;
+            font-weight: normal;
+            color: #999;
+            font-style: italic;
+            margin-left: 6px;
+        }
+        .uat-field-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            color: #333;
+            background: #fff;
+            border: 1px solid #c5a0d5;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        .uat-field-input:focus {
+            outline: none;
+            border-color: #5b176d;
+            box-shadow: 0 0 0 2px rgba(91,23,109,0.12);
+        }
+        .uat-loading {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-style: italic;
+        }
+        .uat-empty {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+        }
+    </style>
+
+    <div class="uat-container">
+
+        <div class="uat-header">
+            <h2>Additional Information Required</h2>
+            <div class="agent-name">{{agentId}}</div>
+        </div>
+
+        <div class="uat-body">
+
+            <p class="uat-subtitle">
+                Please provide the following details to continue rule creation.
+            </p>
+
+            <!-- Loading state -->
+            <div ng-if="loading" class="uat-loading">
+                Loading questions...
+            </div>
+
+            <!-- No questions edge case -->
+            <div ng-if="!loading && questions.length === 0" class="uat-empty">
+                No questions to display. Click Submit to continue.
+            </div>
+
+            <!-- Dynamic question fields -->
+            <div ng-if="!loading && questions.length > 0">
+                <div ng-repeat="question in questions"
+                     class="uat-field-group">
+                    <label class="uat-field-label"
+                           for="field_{{missingFields[$index]}}">
+                        {{question}}
+                        <span class="uat-field-key">({{missingFields[$index]}})</span>
+                    </label>
+                    <input type="text"
+                           class="uat-field-input"
+                           id="field_{{missingFields[$index]}}"
+                           ng-model="answers[missingFields[$index]]"
+                           placeholder="Enter your answer..." />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</form>

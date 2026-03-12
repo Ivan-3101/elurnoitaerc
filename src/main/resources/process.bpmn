@@ -154,11 +154,11 @@
         <bpmn:outgoing>Flow_1vty2u8</bpmn:outgoing>
         <bpmn:outgoing>Flow_148cdqt</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:serviceTask id="Generic_Agent" name="Generic Agent">
+      <bpmn:serviceTask id="Generic_Agent" name="Generic Agent" camunda:modelerTemplate="com.dronapay.generic.orchestrator.agent" camunda:class="com.DronaPay.generic.delegates.OrchestratorAgentDelegate">
         <bpmn:incoming>Flow_1epidy7</bpmn:incoming>
         <bpmn:outgoing>Flow_0l43wcn</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:userTask id="Activity_13uk4oo" name="x.UserTask">
+      <bpmn:userTask id="Activity_13uk4oo" name="x.UserTask" camunda:formKey="embedded:app:forms/agent-user-task-form.html">
         <bpmn:incoming>Flow_1vty2u8</bpmn:incoming>
         <bpmn:outgoing>Flow_0rw7fbe</bpmn:outgoing>
       </bpmn:userTask>
@@ -260,13 +260,13 @@
         <di:waypoint x="218" y="340" />
         <di:waypoint x="280" y="340" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0hkcf7q_di" bpmnElement="Flow_0hkcf7q">
-        <di:waypoint x="1030" y="340" />
-        <di:waypoint x="1192" y="340" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1axt5ei_di" bpmnElement="Flow_1axt5ei">
         <di:waypoint x="380" y="340" />
         <di:waypoint x="430" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hkcf7q_di" bpmnElement="Flow_0hkcf7q">
+        <di:waypoint x="1030" y="340" />
+        <di:waypoint x="1192" y="340" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
