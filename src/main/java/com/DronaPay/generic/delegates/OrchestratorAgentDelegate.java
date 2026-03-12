@@ -69,10 +69,10 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
 
-        String tenantId    = execution.getTenantId();
-        String ticketId    = String.valueOf(execution.getVariable("TicketID"));
-        String agentId     = getString(execution, "currentAgentId");
-        String stepCfgStr  = getString(execution, "currentStepConfig");
+        String tenantId   = execution.getTenantId();
+        String ticketId   = String.valueOf(execution.getVariable("TicketID"));
+        String agentId    = getString(execution, "currentAgentId");
+        String stepCfgStr = getString(execution, "currentStepConfig");
 
         log.info("=== OrchestratorAgentDelegate | agentId={} | TicketID={} ===",
                 agentId, ticketId);
@@ -86,8 +86,8 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
                     "OrchestratorAgentDelegate: currentStepConfig process variable is null or empty.");
         }
 
-        JSONObject stepConfig  = new JSONObject(stepCfgStr);
-        Properties props       = TenantPropertiesUtil.getTenantProps(tenantId);
+        JSONObject stepConfig   = new JSONObject(stepCfgStr);
+        Properties props        = TenantPropertiesUtil.getTenantProps(tenantId);
         StorageProvider storage = ObjectStorageService.getStorageProvider(tenantId);
 
         // ── 1. Derive stage folder and run counter ────────────────────────────
@@ -103,30 +103,20 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
         String contextJson;
         try (InputStream is = storage.downloadDocument(contextPath)) {
             contextJson = IOUtils.toString(is, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            log.error("Failed to download context.json from path: {}", contextPath);
-            throw new BpmnError("CONTEXT_FETCH_ERROR",
-                    "OrchestratorAgentDelegate: Could not fetch context.json — " + e.getMessage());
         }
         log.debug("context.json fetched ({} chars)", contextJson.length());
 
         // ── 3. Build DIA request payload ──────────────────────────────────────
-        JSONObject contextObj;
-        try {
-            contextObj = new JSONObject(contextJson);
-        } catch (Exception e) {
-            throw new BpmnError("CONTEXT_PARSE_ERROR",
-                    "OrchestratorAgentDelegate: context.json is not valid JSON — " + e.getMessage());
-        }
+        JSONObject context = new JSONObject(contextJson);
+        JSONObject data    = new JSONObject();
+        data.put("context", context);
 
-        JSONObject payload = new JSONObject();
-        payload.put("agentid", agentId);
-        JSONObject data = new JSONObject();
-        data.put("context", contextObj);
-        payload.put("data", data);
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("agentid", agentId);
+        requestBody.put("data", data);
 
-        String requestBody = payload.toString();
-        log.info("DIA payload built for agentId={} | context keys={}", agentId, contextObj.keySet());
+        log.info("DIA payload built for agentId={} | context keys={}",
+                agentId, context.keySet());
 
         // ── 4. Call DIA endpoint ──────────────────────────────────────────────
         String baseUrl = props.getProperty(DIA_PROP_KEY);
@@ -144,7 +134,7 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
 
         String responseBody;
         try {
-            responseBody = callDia(fullUrl, requestBody, username, password);
+            responseBody = callDia(fullUrl, requestBody.toString(), username, password);
         } catch (Exception e) {
             log.error("DIA call failed for agentId={}: {}", agentId, e.getMessage());
             // Set a synthetic FAIL response so OrchestratorDelegate can handle it
@@ -161,22 +151,13 @@ public class OrchestratorAgentDelegate implements JavaDelegate {
         // ── 5. Set lastAgentResult (always — OrchestratorDelegate reads this) ─
         execution.setVariable("lastAgentResult", responseBody);
 
-        // ── 6. Save raw response to MinIO under stage folder ──────────────────
-        // Path: {tenantId}/RuleCreation/{ticketId}/{Stage Folder}/{agentId}_output_run{n}.json
-        String rawOutputPath = tenantId + "/" + WORKFLOW_KEY + "/" + ticketId + "/"
-                + stageFolder + "/" + agentId + "_output_run" + runCount + ".json";
-        try {
-            storage.uploadDocument(rawOutputPath,
-                    responseBody.getBytes(StandardCharsets.UTF_8), "application/json");
-            log.info("Raw agent output saved: {}", rawOutputPath);
-        } catch (Exception e) {
-            log.warn("Could not save raw agent output to MinIO — continuing. Reason: {}", e.getMessage());
-        }
-
-        // ── 7. Process outputMapping ──────────────────────────────────────────
+        // ── 6. Process outputMapping ──────────────────────────────────────────
         // outputMapping is a JSON array in currentStepConfig:
-        //   [{"type":"var",   "key":"agentAction",       "jsonPath":"$.action"},
-        //    {"type":"minio", "key":"execution-mode-agent_output", "jsonPath":"$"}]
+        //   [{"type":"var",   "key":"agentAction",                    "jsonPath":"$.action"},
+        //    {"type":"minio", "key":"execution-mode-agent_output",    "jsonPath":"$"       }]
+        //
+        // The type="minio" entry is solely responsible for persisting the agent output
+        // file to MinIO. No separate raw-save step is needed.
         String outputMappingStr = stepConfig.optString("outputMapping", "[]");
         JSONArray outputMapping;
         try {
