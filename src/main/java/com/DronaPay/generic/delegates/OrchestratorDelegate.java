@@ -194,21 +194,20 @@ public class OrchestratorDelegate implements JavaDelegate {
             case "NEXT_STEP": {
                 int nextIndex = currentStepIndex + 1;
                 context.put("currentStepIndex", nextIndex);
-                uploadContext(storage, contextPath, context);
-
                 execution.setVariable("retryCount", 0);
 
                 if (nextIndex >= totalSteps) {
+                    context.put("workflowStatus", "DONE");   // ← add this
+                    uploadContext(storage, contextPath, context);  // ← move after status set
                     execution.setVariable("orchestratorAction", "EXIT");
-                    execution.setVariable("workflowStatus",     "DONE");
-                    log.info("All stages complete | action=EXIT");
+                    execution.setVariable("workflowStatus", "DONE");
                 } else {
+                    context.put("workflowStatus", "RUNNING");  // ← add this
+                    uploadContext(storage, contextPath, context);  // ← move after status set
                     execution.setVariable("currentStepIndex", nextIndex);
                     setCurrentStepVars(execution, steps.get(nextIndex), nextIndex);
                     execution.setVariable("orchestratorAction", "CONTINUE");
-                    execution.setVariable("workflowStatus",     "RUNNING");
-                    log.info("Advancing to stage {} | agentId={} | action=CONTINUE",
-                            nextIndex, steps.get(nextIndex).optString("agentId"));
+                    execution.setVariable("workflowStatus", "RUNNING");
                 }
                 break;
             }
