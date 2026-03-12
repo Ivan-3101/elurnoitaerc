@@ -77,6 +77,14 @@
         "binding": { "type": "camunda:inputParameter", "name": "stage1OnFailure" }
       },
       {
+        "label": "Input Parameters",
+        "group": "stage-1",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage1InputParams" }
+      },
+      {
         "label": "Output Mapping",
         "group": "stage-1",
         "type": "Text",
@@ -138,6 +146,14 @@
           { "name": "RETRY", "value": "RETRY" }
         ],
         "binding": { "type": "camunda:inputParameter", "name": "stage2OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-2",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage2InputParams" }
       },
       {
         "label": "Output Mapping",
@@ -203,6 +219,14 @@
         "binding": { "type": "camunda:inputParameter", "name": "stage3OnFailure" }
       },
       {
+        "label": "Input Parameters",
+        "group": "stage-3",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage3InputParams" }
+      },
+      {
         "label": "Output Mapping",
         "group": "stage-3",
         "type": "Text",
@@ -264,6 +288,14 @@
           { "name": "RETRY", "value": "RETRY" }
         ],
         "binding": { "type": "camunda:inputParameter", "name": "stage4OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-4",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage4InputParams" }
       },
       {
         "label": "Output Mapping",
@@ -329,6 +361,14 @@
         "binding": { "type": "camunda:inputParameter", "name": "stage5OnFailure" }
       },
       {
+        "label": "Input Parameters",
+        "group": "stage-5",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage5InputParams" }
+      },
+      {
         "label": "Output Mapping",
         "group": "stage-5",
         "type": "Text",
@@ -392,6 +432,14 @@
         "binding": { "type": "camunda:inputParameter", "name": "stage6OnFailure" }
       },
       {
+        "label": "Input Parameters",
+        "group": "stage-6",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage6InputParams" }
+      },
+      {
         "label": "Output Mapping",
         "group": "stage-6",
         "type": "Text",
@@ -453,6 +501,14 @@
           { "name": "RETRY", "value": "RETRY" }
         ],
         "binding": { "type": "camunda:inputParameter", "name": "stage7OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-7",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage7InputParams" }
       },
       {
         "label": "Output Mapping",

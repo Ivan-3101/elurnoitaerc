@@ -4,7 +4,7 @@
     "name": "Orchestrator Agent Task",
     "id": "com.dronapay.generic.orchestrator.agent",
     "appliesTo": ["bpmn:ServiceTask"],
-    "description": "Generic Agent Task for the Orchestrator loop. All configuration (agentId, outputMapping) is injected at runtime via process variables set by OrchestratorDelegate. No fields required from the modeller.",
+    "description": "Generic Agent Task for the Orchestrator loop. All dynamic values (agentId, inputParams, outputMapping) are resolved at runtime from process variables set by OrchestratorDelegate. Base URL, route, auth, and HTTP method are hardcoded. No fields require modeller input.",
     "properties": [
       {
         "type": "Hidden",
@@ -12,6 +12,85 @@
         "binding": {
           "type": "property",
           "name": "camunda:class"
+        }
+      },
+      {
+        "label": "Agent ID",
+        "description": "Resolved at runtime from process variable currentAgentId set by OrchestratorDelegate.",
+        "type": "String",
+        "value": "${currentAgentId}",
+        "binding": {
+          "type": "camunda:field",
+          "name": "agentId"
+        }
+      },
+      {
+        "label": "Base URL",
+        "description": "Base URL key for the DIA Agent API.",
+        "type": "Dropdown",
+        "choices": [
+          { "name": "DIA Agent API", "value": "dia" }
+        ],
+        "value": "dia",
+        "binding": {
+          "type": "camunda:field",
+          "name": "baseUrl"
+        }
+      },
+      {
+        "label": "Route",
+        "description": "API route for the DIA agent endpoint.",
+        "type": "String",
+        "value": "agent",
+        "binding": {
+          "type": "camunda:field",
+          "name": "route"
+        }
+      },
+      {
+        "label": "Authentication",
+        "description": "Authentication method for DIA API calls.",
+        "type": "Dropdown",
+        "choices": [
+          { "name": "Basic Auth", "value": "basicAuth" }
+        ],
+        "value": "basicAuth",
+        "binding": {
+          "type": "camunda:field",
+          "name": "authType"
+        }
+      },
+      {
+        "label": "HTTP Method",
+        "description": "HTTP method for DIA API calls.",
+        "type": "Dropdown",
+        "choices": [
+          { "name": "POST", "value": "POST" }
+        ],
+        "value": "POST",
+        "binding": {
+          "type": "camunda:field",
+          "name": "method"
+        }
+      },
+      {
+        "label": "Input Parameters (JSON)",
+        "description": "Resolved at runtime from process variable currentInputParams set by OrchestratorDelegate. Defines what goes into the 'data' object of the DIA request payload. Supports type: minioJson (fetch from MinIO) and type: value (literal).",
+        "type": "Text",
+        "value": "${currentInputParams}",
+        "binding": {
+          "type": "camunda:field",
+          "name": "inputParams"
+        }
+      },
+      {
+        "label": "Output Mapping (JSON)",
+        "description": "Resolved at runtime from process variable currentOutputMapping set by OrchestratorDelegate. Defines how the DIA response is routed — to Camunda process variables (type: var) or MinIO files (type: minio).",
+        "type": "Text",
+        "value": "${currentOutputMapping}",
+        "binding": {
+          "type": "camunda:field",
+          "name": "outputMapping"
         }
       }
     ]

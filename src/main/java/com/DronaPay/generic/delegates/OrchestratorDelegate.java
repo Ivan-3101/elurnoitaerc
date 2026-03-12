@@ -29,12 +29,20 @@ import java.util.List;
  *
  * Sets orchestratorAction to one of: CONTINUE | RETRY_STEP | GO_USER_TASK | EXIT
  * GW1 routes on this variable.
+ *
+ * Process variables set for the Generic Agent Task (read by OrchestratorAgentDelegate):
+ *   - currentAgentId       : String — agent ID for this stage
+ *   - currentStageType     : String — stage type slug (e.g. "execution-mode")
+ *   - currentInputParams   : String — JSON array describing the DIA request data payload
+ *   - currentOutputMapping : String — JSON array for output routing after DIA response
+ *   - currentStepIndex     : Integer — zero-based index of current stage
+ *   - contextMinioPath     : String — MinIO path to context.json for this session
  */
 @Slf4j
 public class OrchestratorDelegate implements JavaDelegate {
 
-    private static final String WORKFLOW_KEY   = "RuleCreation";
-    private static final String CONTEXT_FILE   = "context.json";
+    private static final String WORKFLOW_KEY    = "RuleCreation";
+    private static final String CONTEXT_FILE    = "context.json";
     private static final int    MAX_STAGE_SLOTS = 7;
 
     @Override
@@ -46,8 +54,12 @@ public class OrchestratorDelegate implements JavaDelegate {
 
         log.info("=== OrchestratorDelegate | TicketID: {} | Tenant: {} ===", ticketId, tenantId);
 
-        StorageProvider storage = ObjectStorageService.getStorageProvider(tenantId);
-        String contextPath = buildContextPath(tenantId, ticketId);
+        StorageProvider storage     = ObjectStorageService.getStorageProvider(tenantId);
+        String          contextPath = buildContextPath(tenantId, ticketId);
+
+        // Always keep contextMinioPath in sync — OrchestratorAgentDelegate reads this
+        // via the ${contextMinioPath} placeholder inside currentInputParams.
+        execution.setVariable("contextMinioPath", contextPath);
 
         Integer currentStepIndex = toInteger(execution.getVariable("currentStepIndex"));
 
@@ -65,22 +77,19 @@ public class OrchestratorDelegate implements JavaDelegate {
 
             int totalSteps = steps.size();
 
-            // Persist context.json to MinIO
             JSONObject context = new JSONObject();
-            context.put("ticketId",          ticketId);
-            context.put("workflowKey",       WORKFLOW_KEY);
-            context.put("tenantId",          tenantId);
-            context.put("userInput",         userInput != null ? userInput : "");
-            context.put("currentStepIndex",  0);
-            context.put("totalSteps",        totalSteps);
-            context.put("workflowStatus",    "RUNNING");
-            context.put("extracted_values",  new JSONObject());
+            context.put("ticketId",           ticketId);
+            context.put("workflowKey",        WORKFLOW_KEY);
+            context.put("tenantId",           tenantId);
+            context.put("userInput",          userInput != null ? userInput : "");
+            context.put("currentStepIndex",   0);
+            context.put("totalSteps",         totalSteps);
+            context.put("workflowStatus",     "RUNNING");
+            context.put("extracted_values",   new JSONObject());
             context.put("interaction_history", new JSONArray());
 
             uploadContext(storage, contextPath, context);
 
-            // Store serialised steps as process variable so subsequent runs
-            // don't need to rely on camunda:inputParameter still being in scope
             execution.setVariable("stepsConfig",      stepsToJsonArray(steps).toString());
             execution.setVariable("currentStepIndex", 0);
             execution.setVariable("retryCount",       0);
@@ -96,97 +105,89 @@ public class OrchestratorDelegate implements JavaDelegate {
         }
 
         // ═══════════════════════════════════════════════════════════════════════
-        // SUBSEQUENT RUNS — load state from process variables
+        // SUBSEQUENT RUNS — load state
         // ═══════════════════════════════════════════════════════════════════════
-        List<JSONObject> steps = loadSteps(execution);
-        int totalSteps = steps.size();
-        int retryCount = toIntVar(execution, "retryCount", 0);
+        List<JSONObject> steps     = loadSteps(execution);
+        int              totalSteps = toIntVar(execution, "totalSteps", steps.size());
+        int              retryCount = toIntVar(execution, "retryCount", 0);
+        JSONObject       context    = downloadContext(storage, contextPath);
 
-        JSONObject context = downloadContext(storage, contextPath);
-
-        // ── PATH A: Returning from User Task ─────────────────────────────────
-        Object userAnswersObj = execution.getVariable("userAnswers");
-        if (userAnswersObj != null && !userAnswersObj.toString().trim().isEmpty()) {
-
+        // ── RETURN FROM USER TASK ────────────────────────────────────────────
+        String userAnswers = getStringVar(execution, "userAnswers");
+        if (userAnswers != null && !userAnswers.trim().isEmpty()) {
             log.info("Returning from User Task | stage={}", currentStepIndex);
 
-            JSONObject userAnswers;
+            // Parse user answers
+            JSONObject answersObj;
             try {
-                userAnswers = new JSONObject(userAnswersObj.toString());
+                answersObj = new JSONObject(userAnswers);
             } catch (Exception e) {
-                log.warn("Could not parse userAnswers as JSON, storing as-is: {}", userAnswersObj);
-                userAnswers = new JSONObject();
-                userAnswers.put("rawAnswer", userAnswersObj.toString());
+                log.warn("userAnswers is not valid JSON — wrapping as raw string");
+                answersObj = new JSONObject();
+                answersObj.put("raw", userAnswers);
             }
 
-            // Append user interaction into interaction_history
+            // Append USER_TASK entry to interaction history
             JSONArray history = context.optJSONArray("interaction_history");
             if (history == null) history = new JSONArray();
 
-            JSONObject entry = new JSONObject();
-            entry.put("stage",          currentStepIndex);
-            entry.put("agentId",        execution.getVariable("currentAgentId"));
-            entry.put("from",           "USER_TASK");
-            entry.put("questions",      toJsonArray(execution.getVariable("agentQuestions")));
-            entry.put("missing_fields", toJsonArray(execution.getVariable("agentMissingFields")));
-            entry.put("userAnswers",    userAnswers);
-            history.put(entry);
-
+            JSONObject userEntry = new JSONObject();
+            userEntry.put("stage",         currentStepIndex);
+            userEntry.put("agentId",       getStringVar(execution, "currentAgentId"));
+            userEntry.put("from",          "USER_TASK");
+            userEntry.put("userAnswers",   answersObj);
+            userEntry.put("questions",     toJsonArray(execution.getVariable("agentQuestions")));
+            userEntry.put("missing_fields", toJsonArray(execution.getVariable("agentMissingFields")));
+            history.put(userEntry);
             context.put("interaction_history", history);
-            uploadContext(storage, contextPath, context);
 
-            // Clear userAnswers so this branch is not re-entered
+            // Clear userAnswers so next Orchestrator run doesn't re-enter this branch
             execution.setVariable("userAnswers", null);
+
+            uploadContext(storage, contextPath, context);
 
             execution.setVariable("orchestratorAction", "RETRY_STEP");
             execution.setVariable("workflowStatus",     "RUNNING");
-
             log.info("User Task return processed | action=RETRY_STEP | stage={}", currentStepIndex);
+
+            log.info("=== OrchestratorDelegate Complete | action=RETRY_STEP ===");
             return;
         }
 
-        // ── PATH B: Returning from Agent ──────────────────────────────────────
-        Object lastAgentResultObj = execution.getVariable("lastAgentResult");
-
-        if (lastAgentResultObj == null) {
-            // Should not happen in normal flow — defensive guard
-            log.warn("lastAgentResult is null — defaulting to RETRY_STEP");
-            execution.setVariable("orchestratorAction", "RETRY_STEP");
-            return;
-        }
-
+        // ── RETURN FROM AGENT ────────────────────────────────────────────────
+        String lastAgentResultStr = getStringVar(execution, "lastAgentResult");
         JSONObject lastAgentResult;
         try {
-            lastAgentResult = new JSONObject(lastAgentResultObj.toString());
+            lastAgentResult = new JSONObject(
+                    lastAgentResultStr != null ? lastAgentResultStr : "{}");
         } catch (Exception e) {
-            log.error("Could not parse lastAgentResult as JSON: {} — forcing EXIT", lastAgentResultObj);
-            execution.setVariable("orchestratorAction", "EXIT");
-            execution.setVariable("workflowStatus",     "ERROR");
-            return;
+            log.warn("lastAgentResult is not valid JSON — treating as empty");
+            lastAgentResult = new JSONObject();
         }
 
-        String agentAction = lastAgentResult.optString("action", "FAIL").toUpperCase();
+        String agentAction = lastAgentResult.optString("action", "FAIL");
         log.info("Returning from Agent | agentAction={} | stage={}", agentAction, currentStepIndex);
 
-        // Always merge updated_context regardless of action taken
+        // Merge updated_context into extracted_values regardless of action
         mergeUpdatedContext(context, lastAgentResult);
 
-        // Append agent interaction to history
+        // Append AGENT entry to interaction history
         JSONArray history = context.optJSONArray("interaction_history");
         if (history == null) history = new JSONArray();
+
         JSONObject agentEntry = new JSONObject();
-        agentEntry.put("stage",    currentStepIndex);
-        agentEntry.put("agentId",  execution.getVariable("currentAgentId"));
-        agentEntry.put("from",     "AGENT");
-        agentEntry.put("action",   agentAction);
-        agentEntry.put("status",   lastAgentResult.optString("status", ""));
+        agentEntry.put("stage",      currentStepIndex);
+        agentEntry.put("agentId",    getStringVar(execution, "currentAgentId"));
+        agentEntry.put("from",       "AGENT");
+        agentEntry.put("action",     agentAction);
+        agentEntry.put("status",     lastAgentResult.optString("status", ""));
         agentEntry.put("confidence", lastAgentResult.opt("confidence"));
         history.put(agentEntry);
         context.put("interaction_history", history);
 
         JSONObject currentStep = steps.get(currentStepIndex);
-        String  onFailure  = currentStep.optString("onFailure", "END");
-        int     maxRetries = currentStep.optInt("maxRetries", 0);
+        String     onFailure   = currentStep.optString("onFailure",  "END");
+        int        maxRetries  = currentStep.optInt("maxRetries", 0);
 
         switch (agentAction) {
 
@@ -197,18 +198,18 @@ public class OrchestratorDelegate implements JavaDelegate {
                 execution.setVariable("retryCount", 0);
 
                 if (nextIndex >= totalSteps) {
-                    context.put("workflowStatus", "DONE");   // ← add this
-                    uploadContext(storage, contextPath, context);  // ← move after status set
-                    execution.setVariable("currentStepIndex",   nextIndex); // sync process var
+                    context.put("workflowStatus", "DONE");
+                    uploadContext(storage, contextPath, context);
+                    execution.setVariable("currentStepIndex",   nextIndex);
                     execution.setVariable("orchestratorAction", "EXIT");
-                    execution.setVariable("workflowStatus", "DONE");
+                    execution.setVariable("workflowStatus",     "DONE");
                 } else {
-                    context.put("workflowStatus", "RUNNING");  // ← add this
-                    uploadContext(storage, contextPath, context);  // ← move after status set
+                    context.put("workflowStatus", "RUNNING");
+                    uploadContext(storage, contextPath, context);
                     execution.setVariable("currentStepIndex", nextIndex);
                     setCurrentStepVars(execution, steps.get(nextIndex), nextIndex);
                     execution.setVariable("orchestratorAction", "CONTINUE");
-                    execution.setVariable("workflowStatus", "RUNNING");
+                    execution.setVariable("workflowStatus",     "RUNNING");
                 }
                 break;
             }
@@ -222,7 +223,7 @@ public class OrchestratorDelegate implements JavaDelegate {
                 break;
             }
 
-            // ── RETRY_STEP (agent-requested) ─────────────────────────────────
+            // ── RETRY_STEP (agent-requested) ──────────────────────────────────
             case "RETRY_STEP": {
                 int newRetryCount = retryCount + 1;
                 execution.setVariable("retryCount", newRetryCount);
@@ -278,22 +279,29 @@ public class OrchestratorDelegate implements JavaDelegate {
     // ═══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Builds the steps list from camunda:inputParameter values injected into
-     * this task's execution scope. Called only on first run.
+     * Builds the steps list from camunda:inputParameter values injected by the
+     * Orchestrator Element Template. Called only on first run.
+     *
+     * Reads the following fields per stage slot N (1–7):
+     *   stageNType, stageNAgentId, stageNAllowUserInput, stageNMaxRetries,
+     *   stageNOnFailure, stageNInputParams, stageNOutputMapping
+     *
+     * Skips any slot where stageNType is null, "none", or "NA".
      */
     private List<JSONObject> buildSteps(DelegateExecution execution) {
         List<JSONObject> steps = new ArrayList<>();
         for (int i = 1; i <= MAX_STAGE_SLOTS; i++) {
             String type = getStringVar(execution, "stage" + i + "Type");
-            if (type == null || type.equalsIgnoreCase("none")) continue;
+            if (type == null || type.equalsIgnoreCase("none") || type.equalsIgnoreCase("NA")) continue;
 
             JSONObject step = new JSONObject();
-            step.put("stageType",       type);
-            step.put("agentId",         getStringVar(execution, "stage" + i + "AgentId"));
-            step.put("allowUserInput",  getStringVar(execution, "stage" + i + "AllowUserInput"));
-            step.put("maxRetries",      parseIntSafe(getStringVar(execution, "stage" + i + "MaxRetries")));
-            step.put("onFailure",       getStringVar(execution, "stage" + i + "OnFailure"));
-            step.put("outputMapping",   getStringVar(execution, "stage" + i + "OutputMapping"));
+            step.put("stageType",      type);
+            step.put("agentId",        getStringVar(execution, "stage" + i + "AgentId"));
+            step.put("allowUserInput", getStringVar(execution, "stage" + i + "AllowUserInput"));
+            step.put("maxRetries",     parseIntSafe(getStringVar(execution, "stage" + i + "MaxRetries")));
+            step.put("onFailure",      getStringVar(execution, "stage" + i + "OnFailure"));
+            step.put("inputParams",    getStringVar(execution, "stage" + i + "InputParams"));
+            step.put("outputMapping",  getStringVar(execution, "stage" + i + "OutputMapping"));
             steps.add(step);
 
             log.debug("Stage slot {} loaded: type={} agentId={}", i, type, step.optString("agentId"));
@@ -303,7 +311,7 @@ public class OrchestratorDelegate implements JavaDelegate {
     }
 
     /**
-     * Loads steps from the stepsConfig process variable (set on first run).
+     * Loads steps from the stepsConfig process variable (persisted on first run).
      * Used on all subsequent runs to avoid relying on camunda:inputParameter scope.
      */
     private List<JSONObject> loadSteps(DelegateExecution execution) {
@@ -321,21 +329,30 @@ public class OrchestratorDelegate implements JavaDelegate {
     }
 
     /**
-     * Sets the three process variables that the Generic Agent Task reads:
-     *   currentAgentId     — the agentId string for this stage
-     *   currentStepConfig  — full step JSON (includes outputMapping for GenericAgentDelegate)
-     *   currentStepIndex   — current position in the steps array
+     * Sets the process variables that OrchestratorAgentDelegate reads via its
+     * Expression fields and placeholder resolution:
+     *
+     *   currentAgentId       — resolves ${currentAgentId} in the agentId field
+     *   currentStageType     — used to derive the MinIO stage folder name
+     *   currentInputParams   — resolves ${currentInputParams} in the inputParams field
+     *   currentOutputMapping — resolves ${currentOutputMapping} in the outputMapping field
+     *   currentStepIndex     — current zero-based position in the steps array
+     *
+     * Note: contextMinioPath is set at the top of execute() on every run and does
+     * not change per step. It resolves ${contextMinioPath} inside currentInputParams.
      */
     private void setCurrentStepVars(DelegateExecution execution, JSONObject step, int index) {
-        execution.setVariable("currentAgentId",    step.optString("agentId", "unknown-agent"));
-        execution.setVariable("currentStepConfig", step.toString());
-        execution.setVariable("currentStepIndex",  index);
+        execution.setVariable("currentAgentId",        step.optString("agentId",       "unknown-agent"));
+        execution.setVariable("currentStageType",      step.optString("stageType",     "unknown"));
+        execution.setVariable("currentInputParams",    step.optString("inputParams",   "[]"));
+        execution.setVariable("currentOutputMapping",  step.optString("outputMapping", "[]"));
+        execution.setVariable("currentStepIndex",      index);
     }
 
     /**
      * Applies the on_failure strategy when max retries are exceeded or agent signals FAIL.
-     * RETRY  → keeps looping (RETRY_STEP)
-     * END    → exits workflow (EXIT)
+     * RETRY → keeps looping (RETRY_STEP)
+     * END   → exits workflow (EXIT)
      */
     private void applyOnFailure(DelegateExecution execution, JSONObject context,
                                 StorageProvider storage, String contextPath,
@@ -346,7 +363,6 @@ public class OrchestratorDelegate implements JavaDelegate {
             execution.setVariable("workflowStatus",     "RUNNING");
             log.info("on_failure=RETRY — RETRY_STEP at stage {}", currentStepIndex);
         } else {
-            // Default: END
             execution.setVariable("orchestratorAction", "EXIT");
             execution.setVariable("workflowStatus",     "DONE");
             log.info("on_failure=END — EXIT at stage {}", currentStepIndex);
@@ -405,42 +421,26 @@ public class OrchestratorDelegate implements JavaDelegate {
 
     private Integer toInteger(Object val) {
         if (val == null) return null;
-        try {
-            return Integer.parseInt(val.toString());
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        try { return Integer.parseInt(val.toString()); }
+        catch (NumberFormatException e) { return null; }
     }
 
     private int toIntVar(DelegateExecution execution, String name, int defaultValue) {
         Object val = execution.getVariable(name);
         if (val == null) return defaultValue;
-        try {
-            return Integer.parseInt(val.toString());
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        try { return Integer.parseInt(val.toString()); }
+        catch (NumberFormatException e) { return defaultValue; }
     }
 
     private int parseIntSafe(String value) {
         if (value == null || value.equalsIgnoreCase("NA") || value.trim().isEmpty()) return 0;
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        try { return Integer.parseInt(value.trim()); }
+        catch (NumberFormatException e) { return 0; }
     }
 
-    /**
-     * Safely converts a process variable (String, JSONArray, List, or null) to JSONArray.
-     * Used when reading agentQuestions / agentMissingFields from the User Task branch.
-     */
     private JSONArray toJsonArray(Object val) {
         if (val == null) return new JSONArray();
-        try {
-            return new JSONArray(val.toString());
-        } catch (Exception e) {
-            return new JSONArray();
-        }
+        try { return new JSONArray(val.toString()); }
+        catch (Exception e) { return new JSONArray(); }
     }
 }
