@@ -152,39 +152,39 @@
       <bpmn:serviceTask id="Orchestrator" name="Orchestrator" camunda:modelerTemplate="com.dronapay.generic.orchestrator" camunda:class="com.DronaPay.generic.delegates.OrchestratorDelegate">
         <bpmn:extensionElements>
           <camunda:inputOutput>
-            <camunda:inputParameter name="stage1InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage1InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage1OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"execution-mode-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage2InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage2InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage2OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"product-class-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage3InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage3InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage3OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"txn-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage4Type">none</camunda:inputParameter>
             <camunda:inputParameter name="stage4AgentId">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage4AllowUserInput">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage4MaxRetries">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage4OnFailure">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage4InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage4InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage4OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"master-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage5Type">none</camunda:inputParameter>
             <camunda:inputParameter name="stage5AgentId">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage5AllowUserInput">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage5MaxRetries">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage5OnFailure">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage5InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage5InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage5OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"profile-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage6Type">none</camunda:inputParameter>
             <camunda:inputParameter name="stage6AgentId">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage6AllowUserInput">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage6MaxRetries">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage6OnFailure">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage6InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage6InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage6OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"threshold-naming-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage7Type">none</camunda:inputParameter>
             <camunda:inputParameter name="stage7AgentId">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage7AllowUserInput">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage7MaxRetries">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage7OnFailure">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage7InputParams">[{"key":"context","type":"minioJson","value":"${contextMinioPath}","sourceJsonPath":"$"}]</camunda:inputParameter>
+            <camunda:inputParameter name="stage7InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage7OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"wiring-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage1Type">execution-mode</camunda:inputParameter>
             <camunda:inputParameter name="stage1AgentId">execution-mode-agent</camunda:inputParameter>
@@ -193,19 +193,19 @@
             <camunda:inputParameter name="stage1OnFailure">END</camunda:inputParameter>
             <camunda:inputParameter name="stage2Type">product-class</camunda:inputParameter>
             <camunda:inputParameter name="stage3Type">txn-parameters</camunda:inputParameter>
-            <camunda:inputParameter name="stage2AgentId">product-class-agent</camunda:inputParameter>
-            <camunda:inputParameter name="stage2AllowUserInput">true</camunda:inputParameter>
-            <camunda:inputParameter name="stage2MaxRetries">3</camunda:inputParameter>
-            <camunda:inputParameter name="stage2OnFailure">END</camunda:inputParameter>
-            <camunda:inputParameter name="stage3AgentId">transaction-parameter-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage3OnFailure">END</camunda:inputParameter>
             <camunda:inputParameter name="stage3AllowUserInput">true</camunda:inputParameter>
             <camunda:inputParameter name="stage3MaxRetries">3</camunda:inputParameter>
-            <camunda:inputParameter name="stage3OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage2OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage2MaxRetries">3</camunda:inputParameter>
+            <camunda:inputParameter name="stage2AllowUserInput">true</camunda:inputParameter>
+            <camunda:inputParameter name="stage2AgentId">product-class-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage3AgentId">transaction-parameter-agent</camunda:inputParameter>
           </camunda:inputOutput>
         </bpmn:extensionElements>
-        <bpmn:incoming>Flow_0vgn3zw</bpmn:incoming>
-        <bpmn:incoming>Flow_0l43wcn</bpmn:incoming>
         <bpmn:incoming>Flow_0rw7fbe</bpmn:incoming>
+        <bpmn:incoming>Flow_0l43wcn</bpmn:incoming>
+        <bpmn:incoming>Flow_0vgn3zw</bpmn:incoming>
         <bpmn:outgoing>Flow_1scutn9</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
@@ -243,7 +243,7 @@
       <bpmndi:BPMNShape id="Activity_1syxwxj_di" bpmnElement="Generic_Agent" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="730" y="109" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1b03yai_di" bpmnElement="Orchestrator" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+      <bpmndi:BPMNShape id="Activity_0u7h8sq_di" bpmnElement="Orchestrator" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
         <dc:Bounds x="560" y="299" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0vgn3zw_di" bpmnElement="Flow_0vgn3zw">

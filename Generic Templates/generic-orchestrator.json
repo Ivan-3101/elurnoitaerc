@@ -81,7 +81,7 @@
         "group": "stage-1",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage1InputParams" }
       },
       {
@@ -152,7 +152,7 @@
         "group": "stage-2",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage2InputParams" }
       },
       {
@@ -223,7 +223,7 @@
         "group": "stage-3",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage3InputParams" }
       },
       {
@@ -294,7 +294,7 @@
         "group": "stage-4",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage4InputParams" }
       },
       {
@@ -365,7 +365,7 @@
         "group": "stage-5",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage5InputParams" }
       },
       {
@@ -436,7 +436,7 @@
         "group": "stage-6",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage6InputParams" }
       },
       {
@@ -507,7 +507,7 @@
         "group": "stage-7",
         "type": "Text",
         "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
-        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"${contextMinioPath}\",\"sourceJsonPath\":\"$\"}]",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
         "binding": { "type": "camunda:inputParameter", "name": "stage7InputParams" }
       },
       {

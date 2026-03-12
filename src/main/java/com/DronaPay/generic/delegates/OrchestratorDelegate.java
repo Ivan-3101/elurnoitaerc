@@ -36,7 +36,6 @@ import java.util.List;
  *   - currentInputParams   : String — JSON array describing the DIA request data payload
  *   - currentOutputMapping : String — JSON array for output routing after DIA response
  *   - currentStepIndex     : Integer — zero-based index of current stage
- *   - contextMinioPath     : String — MinIO path to context.json for this session
  */
 @Slf4j
 public class OrchestratorDelegate implements JavaDelegate {
@@ -57,9 +56,9 @@ public class OrchestratorDelegate implements JavaDelegate {
         StorageProvider storage     = ObjectStorageService.getStorageProvider(tenantId);
         String          contextPath = buildContextPath(tenantId, ticketId);
 
-        // Always keep contextMinioPath in sync — OrchestratorAgentDelegate reads this
-        // via the ${contextMinioPath} placeholder inside currentInputParams.
-        execution.setVariable("contextMinioPath", contextPath);
+        // contextPath is passed directly into setCurrentStepVars() where it resolves
+        // the ##contextMinioPath## placeholder in currentInputParams at the time the
+        // step variable is set. No separate process variable needed.
 
         Integer currentStepIndex = toInteger(execution.getVariable("currentStepIndex"));
 
@@ -96,7 +95,7 @@ public class OrchestratorDelegate implements JavaDelegate {
             execution.setVariable("totalSteps",       totalSteps);
             execution.setVariable("workflowStatus",   "RUNNING");
 
-            setCurrentStepVars(execution, steps.get(0), 0);
+            setCurrentStepVars(execution, steps.get(0), 0, contextPath);
             execution.setVariable("orchestratorAction", "CONTINUE");
 
             log.info("Init complete. totalSteps={} | Stage 0 | agentId={} | action=CONTINUE",
@@ -207,7 +206,7 @@ public class OrchestratorDelegate implements JavaDelegate {
                     context.put("workflowStatus", "RUNNING");
                     uploadContext(storage, contextPath, context);
                     execution.setVariable("currentStepIndex", nextIndex);
-                    setCurrentStepVars(execution, steps.get(nextIndex), nextIndex);
+                    setCurrentStepVars(execution, steps.get(nextIndex), nextIndex, contextPath);
                     execution.setVariable("orchestratorAction", "CONTINUE");
                     execution.setVariable("workflowStatus",     "RUNNING");
                 }
@@ -338,13 +337,20 @@ public class OrchestratorDelegate implements JavaDelegate {
      *   currentOutputMapping — resolves ${currentOutputMapping} in the outputMapping field
      *   currentStepIndex     — current zero-based position in the steps array
      *
-     * Note: contextMinioPath is set at the top of execute() on every run and does
-     * not change per step. It resolves ${contextMinioPath} inside currentInputParams.
+     * The stageNInputParams value stored in the template uses ##contextMinioPath## as a
+     * custom non-JUEL placeholder (using ${...} would cause the Camunda engine to evaluate
+     * it as a JUEL expression at task-entry time, before OrchestratorDelegate runs).
+     * This method substitutes ##contextMinioPath## with the actual MinIO path before
+     * storing currentInputParams as a process variable.
      */
-    private void setCurrentStepVars(DelegateExecution execution, JSONObject step, int index) {
+    private void setCurrentStepVars(DelegateExecution execution, JSONObject step,
+                                    int index, String contextPath) {
+        String rawInputParams = step.optString("inputParams", "[]");
+        String resolvedInputParams = rawInputParams.replace("##contextMinioPath##", contextPath);
+
         execution.setVariable("currentAgentId",        step.optString("agentId",       "unknown-agent"));
         execution.setVariable("currentStageType",      step.optString("stageType",     "unknown"));
-        execution.setVariable("currentInputParams",    step.optString("inputParams",   "[]"));
+        execution.setVariable("currentInputParams",    resolvedInputParams);
         execution.setVariable("currentOutputMapping",  step.optString("outputMapping", "[]"));
         execution.setVariable("currentStepIndex",      index);
     }

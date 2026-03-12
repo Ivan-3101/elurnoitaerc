@@ -48,9 +48,8 @@ import java.util.regex.Pattern;
  * Process variables consumed (set by OrchestratorDelegate before routing here):
  *   - currentAgentId      : String — e.g. "execution-mode-agent"
  *   - currentStageType    : String — e.g. "execution-mode" (used for MinIO folder name)
- *   - currentInputParams  : String — JSON array, e.g. [{"key":"context","type":"minioJson",...}]
+ *   - currentInputParams  : String — JSON array with MinIO paths already resolved by OrchestratorDelegate
  *   - currentOutputMapping: String — JSON array, e.g. [{"type":"var","key":"agentAction",...}]
- *   - contextMinioPath    : String — e.g. "1/RuleCreation/2026001189/context.json"
  *
  * Process variables set (read by OrchestratorDelegate on next run):
  *   - lastAgentResult : String — full raw DIA JSON response (always set)
