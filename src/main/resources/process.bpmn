@@ -101,11 +101,6 @@
           <camunda:inputOutput>
             <camunda:inputParameter name="stage1OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"execution-mode-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage2OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"product-class-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage3Type">none</camunda:inputParameter>
-            <camunda:inputParameter name="stage3AgentId">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage3AllowUserInput">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage3MaxRetries">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage3OnFailure">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage3OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"txn-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage4Type">none</camunda:inputParameter>
             <camunda:inputParameter name="stage4AgentId">NA</camunda:inputParameter>
@@ -141,6 +136,11 @@
             <camunda:inputParameter name="stage2AllowUserInput">true</camunda:inputParameter>
             <camunda:inputParameter name="stage2MaxRetries">3</camunda:inputParameter>
             <camunda:inputParameter name="stage2OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage3Type">txn-parameters</camunda:inputParameter>
+            <camunda:inputParameter name="stage3AgentId">transaction-parameter-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage3AllowUserInput">true</camunda:inputParameter>
+            <camunda:inputParameter name="stage3MaxRetries">3</camunda:inputParameter>
+            <camunda:inputParameter name="stage3OnFailure">END</camunda:inputParameter>
           </camunda:inputOutput>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0vgn3zw</bpmn:incoming>
