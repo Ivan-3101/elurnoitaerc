@@ -53,6 +53,7 @@ public class OrchestratorDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
 
         String tenantId  = execution.getTenantId();
+        execution.setVariable("tenantId", tenantId);
         String ticketId  = String.valueOf(execution.getVariable("TicketID"));
         String userInput = (String) execution.getVariable("userInput");
 

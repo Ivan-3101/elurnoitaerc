@@ -88,7 +88,8 @@
         "label": "Output Mapping",
         "group": "stage-1",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"execution-mode-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Execution Mode/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage1AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage1OutputMapping" }
       },
 
@@ -159,7 +160,8 @@
         "label": "Output Mapping",
         "group": "stage-2",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"product-class-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Product Class/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage2AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage2OutputMapping" }
       },
 
@@ -230,7 +232,8 @@
         "label": "Output Mapping",
         "group": "stage-3",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"txn-parameter-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Txn Parameters/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage3AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage3OutputMapping" }
       },
 
@@ -301,7 +304,8 @@
         "label": "Output Mapping",
         "group": "stage-4",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"master-parameter-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Master Parameters/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage4AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage4OutputMapping" }
       },
 
@@ -372,7 +376,8 @@
         "label": "Output Mapping",
         "group": "stage-5",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"profile-parameter-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Profile Parameters/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage5AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage5OutputMapping" }
       },
 
@@ -443,7 +448,8 @@
         "label": "Output Mapping",
         "group": "stage-6",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"threshold-naming-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Threshold Naming/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage6AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage6OutputMapping" }
       },
 
@@ -514,7 +520,8 @@
         "label": "Output Mapping",
         "group": "stage-7",
         "type": "Text",
-        "value": "[{\"type\":\"var\",\"key\":\"agentAction\",\"jsonPath\":\"$.action\"},{\"type\":\"var\",\"key\":\"agentStatus\",\"jsonPath\":\"$.status\"},{\"type\":\"var\",\"key\":\"agentQuestions\",\"jsonPath\":\"$.questions\"},{\"type\":\"var\",\"key\":\"agentMissingFields\",\"jsonPath\":\"$.missing_fields\"},{\"type\":\"var\",\"key\":\"agentConfidence\",\"jsonPath\":\"$.confidence\"},{\"type\":\"minio\",\"key\":\"wiring-agent_output\",\"jsonPath\":\"$\"}]",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"json\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Wiring/${currentAgentId}_output_run${currentRunCount}.json\",\"targetVarName\":\"stage7AgentOutputMinioPath\"}}",
         "binding": { "type": "camunda:inputParameter", "name": "stage7OutputMapping" }
       }
     ]

@@ -8,7 +8,7 @@
     "properties": [
       {
         "type": "Hidden",
-        "value": "com.DronaPay.generic.delegates.OrchestratorAgentDelegate",
+        "value": "com.DronaPay.generic.delegates.GenericAgentDelegate",
         "binding": {
           "type": "property",
           "name": "camunda:class"
