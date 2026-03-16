@@ -89,7 +89,8 @@ public class OrchestratorDelegate implements JavaDelegate {
 
             uploadContext(storage, contextPath, context);
 
-            execution.setVariable("stepsConfig",      stepsToJsonArray(steps).toString());
+//            execution.setVariable("stepsConfig",      stepsToJsonArray(steps).toString());
+            execution.setVariable("stepsConfig",      stepsToJsonArray(steps).toString().getBytes(StandardCharsets.UTF_8));
             execution.setVariable("currentStepIndex", 0);
             execution.setVariable("retryCount",       0);
             execution.setVariable("totalSteps",       totalSteps);
@@ -313,9 +314,31 @@ public class OrchestratorDelegate implements JavaDelegate {
      * Loads steps from the stepsConfig process variable (persisted on first run).
      * Used on all subsequent runs to avoid relying on camunda:inputParameter scope.
      */
+//    private List<JSONObject> loadSteps(DelegateExecution execution) {
+//        List<JSONObject> steps = new ArrayList<>();
+//        String stepsConfigStr = getStringVar(execution, "stepsConfig");
+//        if (stepsConfigStr == null || stepsConfigStr.isEmpty()) {
+//            log.warn("stepsConfig process variable not found — rebuilding from input params");
+//            return buildSteps(execution);
+//        }
+//        JSONArray arr = new JSONArray(stepsConfigStr);
+//        for (int i = 0; i < arr.length(); i++) {
+//            steps.add(arr.getJSONObject(i));
+//        }
+//        return steps;
+//    }
+    // AFTER
     private List<JSONObject> loadSteps(DelegateExecution execution) {
         List<JSONObject> steps = new ArrayList<>();
-        String stepsConfigStr = getStringVar(execution, "stepsConfig");
+        Object raw = execution.getVariable("stepsConfig");
+        String stepsConfigStr;
+        if (raw instanceof byte[]) {
+            stepsConfigStr = new String((byte[]) raw, StandardCharsets.UTF_8);
+        } else if (raw instanceof String) {
+            stepsConfigStr = (String) raw;
+        } else {
+            stepsConfigStr = null;
+        }
         if (stepsConfigStr == null || stepsConfigStr.isEmpty()) {
             log.warn("stepsConfig process variable not found — rebuilding from input params");
             return buildSteps(execution);
