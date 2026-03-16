@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * OrchestratorDelegate — Central state machine for the Rule Creation agent loop.
@@ -36,6 +37,10 @@ import java.util.List;
  *   - currentInputParams   : String — JSON array describing the DIA request data payload
  *   - currentOutputMapping : String — JSON array for output routing after DIA response
  *   - currentStepIndex     : Integer — zero-based index of current stage
+ *
+ * stepsConfig is stored as a List<Map<String, Object>> (Jackson/Camunda Object variable).
+ * This avoids Camunda's 4000-character limit on String variables while remaining
+ * fully readable in Camunda Cockpit as a serialised Java object.
  */
 @Slf4j
 public class OrchestratorDelegate implements JavaDelegate {
@@ -77,20 +82,26 @@ public class OrchestratorDelegate implements JavaDelegate {
             int totalSteps = steps.size();
 
             JSONObject context = new JSONObject();
-            context.put("ticketId",           ticketId);
-            context.put("workflowKey",        WORKFLOW_KEY);
-            context.put("tenantId",           tenantId);
-            context.put("userInput",          userInput != null ? userInput : "");
-            context.put("currentStepIndex",   0);
-            context.put("totalSteps",         totalSteps);
-            context.put("workflowStatus",     "RUNNING");
-            context.put("extracted_values",   new JSONObject());
+            context.put("ticketId",            ticketId);
+            context.put("workflowKey",         WORKFLOW_KEY);
+            context.put("tenantId",            tenantId);
+            context.put("userInput",           userInput != null ? userInput : "");
+            context.put("currentStepIndex",    0);
+            context.put("totalSteps",          totalSteps);
+            context.put("workflowStatus",      "RUNNING");
+            context.put("extracted_values",    new JSONObject());
             context.put("interaction_history", new JSONArray());
 
             uploadContext(storage, contextPath, context);
 
-//            execution.setVariable("stepsConfig",      stepsToJsonArray(steps).toString());
-            execution.setVariable("stepsConfig",      stepsToJsonArray(steps).toString().getBytes(StandardCharsets.UTF_8));
+            // ── Option C: store stepsConfig as List<Map> (no 4000-char limit) ──
+            List<Map<String, Object>> stepMaps = new ArrayList<>();
+            for (JSONObject step : steps) {
+                stepMaps.add(step.toMap());
+            }
+            execution.setVariable("stepsConfig",      stepMaps);
+            // ────────────────────────────────────────────────────────────────────
+
             execution.setVariable("currentStepIndex", 0);
             execution.setVariable("retryCount",       0);
             execution.setVariable("totalSteps",       totalSteps);
@@ -132,11 +143,11 @@ public class OrchestratorDelegate implements JavaDelegate {
             if (history == null) history = new JSONArray();
 
             JSONObject userEntry = new JSONObject();
-            userEntry.put("stage",         currentStepIndex);
-            userEntry.put("agentId",       getStringVar(execution, "currentAgentId"));
-            userEntry.put("from",          "USER_TASK");
-            userEntry.put("userAnswers",   answersObj);
-            userEntry.put("questions",     toJsonArray(execution.getVariable("agentQuestions")));
+            userEntry.put("stage",          currentStepIndex);
+            userEntry.put("agentId",        getStringVar(execution, "currentAgentId"));
+            userEntry.put("from",           "USER_TASK");
+            userEntry.put("userAnswers",    answersObj);
+            userEntry.put("questions",      toJsonArray(execution.getVariable("agentQuestions")));
             userEntry.put("missing_fields", toJsonArray(execution.getVariable("agentMissingFields")));
             history.put(userEntry);
             context.put("interaction_history", history);
@@ -200,7 +211,7 @@ public class OrchestratorDelegate implements JavaDelegate {
                 if (nextIndex >= totalSteps) {
                     context.put("workflowStatus", "DONE");
                     uploadContext(storage, contextPath, context);
-                    execution.setVariable("currentStepIndex",   nextIndex);
+                    execution.setVariable("currentStepIndex", nextIndex);
                     execution.setVariable("orchestratorAction", "EXIT");
                     execution.setVariable("workflowStatus",     "DONE");
                 } else {
@@ -313,41 +324,50 @@ public class OrchestratorDelegate implements JavaDelegate {
     /**
      * Loads steps from the stepsConfig process variable (persisted on first run).
      * Used on all subsequent runs to avoid relying on camunda:inputParameter scope.
+     *
+     * stepsConfig is stored as a List<Map<String, Object>> (Option C — Jackson serialisation).
+     * Each Map entry is reconstructed into a JSONObject for use by the rest of the delegate.
+     * Falls back to rebuilding from Element Template inputs if the variable is missing or
+     * of an unexpected type.
      */
-//    private List<JSONObject> loadSteps(DelegateExecution execution) {
-//        List<JSONObject> steps = new ArrayList<>();
-//        String stepsConfigStr = getStringVar(execution, "stepsConfig");
-//        if (stepsConfigStr == null || stepsConfigStr.isEmpty()) {
-//            log.warn("stepsConfig process variable not found — rebuilding from input params");
-//            return buildSteps(execution);
-//        }
-//        JSONArray arr = new JSONArray(stepsConfigStr);
-//        for (int i = 0; i < arr.length(); i++) {
-//            steps.add(arr.getJSONObject(i));
-//        }
-//        return steps;
-//    }
-    // AFTER
     private List<JSONObject> loadSteps(DelegateExecution execution) {
         List<JSONObject> steps = new ArrayList<>();
         Object raw = execution.getVariable("stepsConfig");
-        String stepsConfigStr;
+
+        if (raw == null) {
+            log.warn("stepsConfig process variable not found — rebuilding from input params");
+            return buildSteps(execution);
+        }
+
+        if (raw instanceof List) {
+            List<?> list = (List<?>) raw;
+            for (Object item : list) {
+                if (item instanceof Map) {
+                    steps.add(new JSONObject((Map<?, ?>) item));
+                }
+            }
+            return steps;
+        }
+
+        // Fallback: handle byte[] or String if somehow stored that way
+        String stepsConfigStr = null;
         if (raw instanceof byte[]) {
             stepsConfigStr = new String((byte[]) raw, StandardCharsets.UTF_8);
         } else if (raw instanceof String) {
             stepsConfigStr = (String) raw;
-        } else {
-            stepsConfigStr = null;
         }
-        if (stepsConfigStr == null || stepsConfigStr.isEmpty()) {
-            log.warn("stepsConfig process variable not found — rebuilding from input params");
-            return buildSteps(execution);
+
+        if (stepsConfigStr != null && !stepsConfigStr.isEmpty()) {
+            JSONArray arr = new JSONArray(stepsConfigStr);
+            for (int i = 0; i < arr.length(); i++) {
+                steps.add(arr.getJSONObject(i));
+            }
+            return steps;
         }
-        JSONArray arr = new JSONArray(stepsConfigStr);
-        for (int i = 0; i < arr.length(); i++) {
-            steps.add(arr.getJSONObject(i));
-        }
-        return steps;
+
+        log.warn("stepsConfig is unexpected type: {} — rebuilding from input params",
+                raw.getClass().getName());
+        return buildSteps(execution);
     }
 
     /**
@@ -368,7 +388,7 @@ public class OrchestratorDelegate implements JavaDelegate {
      */
     private void setCurrentStepVars(DelegateExecution execution, JSONObject step,
                                     int index, String contextPath) {
-        String rawInputParams = step.optString("inputParams", "[]");
+        String rawInputParams      = step.optString("inputParams",    "[]");
         String resolvedInputParams = rawInputParams.replace("##contextMinioPath##", contextPath);
 
         execution.setVariable("currentAgentId",        step.optString("agentId",       "unknown-agent"));

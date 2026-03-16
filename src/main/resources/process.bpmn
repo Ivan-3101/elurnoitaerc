@@ -164,11 +164,6 @@
             <camunda:inputParameter name="stage5OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"profile-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage6InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage6OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"threshold-naming-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage7Type">none</camunda:inputParameter>
-            <camunda:inputParameter name="stage7AgentId">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage7AllowUserInput">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage7MaxRetries">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage7OnFailure">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage7InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage7OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"wiring-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage1Type">execution-mode</camunda:inputParameter>
@@ -201,6 +196,11 @@
             <camunda:inputParameter name="stage6AllowUserInput">true</camunda:inputParameter>
             <camunda:inputParameter name="stage6MaxRetries">3</camunda:inputParameter>
             <camunda:inputParameter name="stage6OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage7Type">wiring</camunda:inputParameter>
+            <camunda:inputParameter name="stage7AgentId">wiring-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage7AllowUserInput">true</camunda:inputParameter>
+            <camunda:inputParameter name="stage7MaxRetries">3</camunda:inputParameter>
+            <camunda:inputParameter name="stage7OnFailure">END</camunda:inputParameter>
           </camunda:inputOutput>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0rw7fbe</bpmn:incoming>
