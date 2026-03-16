@@ -158,25 +158,10 @@
             <camunda:inputParameter name="stage2OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"product-class-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage3InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage3OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"txn-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage4Type">none</camunda:inputParameter>
-            <camunda:inputParameter name="stage4AgentId">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage4AllowUserInput">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage4MaxRetries">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage4OnFailure">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage4InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage4OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"master-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage5Type">none</camunda:inputParameter>
-            <camunda:inputParameter name="stage5AgentId">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage5AllowUserInput">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage5MaxRetries">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage5OnFailure">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage5InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage5OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"profile-parameter-agent_output","jsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage6Type">none</camunda:inputParameter>
-            <camunda:inputParameter name="stage6AgentId">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage6AllowUserInput">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage6MaxRetries">NA</camunda:inputParameter>
-            <camunda:inputParameter name="stage6OnFailure">NA</camunda:inputParameter>
             <camunda:inputParameter name="stage6InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage6OutputMapping">[{"type":"var","key":"agentAction","jsonPath":"$.action"},{"type":"var","key":"agentStatus","jsonPath":"$.status"},{"type":"var","key":"agentQuestions","jsonPath":"$.questions"},{"type":"var","key":"agentMissingFields","jsonPath":"$.missing_fields"},{"type":"var","key":"agentConfidence","jsonPath":"$.confidence"},{"type":"minio","key":"threshold-naming-agent_output","jsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage7Type">none</camunda:inputParameter>
@@ -201,6 +186,21 @@
             <camunda:inputParameter name="stage2AllowUserInput">true</camunda:inputParameter>
             <camunda:inputParameter name="stage2AgentId">product-class-agent</camunda:inputParameter>
             <camunda:inputParameter name="stage3AgentId">transaction-parameter-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage4Type">master-parameters</camunda:inputParameter>
+            <camunda:inputParameter name="stage4AllowUserInput">true</camunda:inputParameter>
+            <camunda:inputParameter name="stage4MaxRetries">3</camunda:inputParameter>
+            <camunda:inputParameter name="stage4OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage4AgentId">master-parameter-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage5Type">profile-parameters</camunda:inputParameter>
+            <camunda:inputParameter name="stage5AgentId">profile-parameter-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage5AllowUserInput">true</camunda:inputParameter>
+            <camunda:inputParameter name="stage5MaxRetries">3</camunda:inputParameter>
+            <camunda:inputParameter name="stage5OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage6Type">threshold-naming</camunda:inputParameter>
+            <camunda:inputParameter name="stage6AgentId">threshold-naming-agent</camunda:inputParameter>
+            <camunda:inputParameter name="stage6AllowUserInput">true</camunda:inputParameter>
+            <camunda:inputParameter name="stage6MaxRetries">3</camunda:inputParameter>
+            <camunda:inputParameter name="stage6OnFailure">END</camunda:inputParameter>
           </camunda:inputOutput>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0rw7fbe</bpmn:incoming>
