@@ -65,9 +65,18 @@ import java.util.regex.Pattern;
  *   On every execution, this delegate increments a per-agent counter stored as a
  *   process variable named "{agentId}_runCount". The current value is also exposed
  *   as "currentRunCount" so outputMapping targetPath values can reference
- *   ${currentRunCount} to version MinIO output files per run.
+ *   ##currentRunCount## to version MinIO output files per run.
  *   This is used by the RuleCreation orchestrator loop. HealthClaim is unaffected
- *   because its outputMapping targetPaths are hardcoded and do not reference ${currentRunCount}.
+ *   because its outputMapping targetPaths are hardcoded and do not reference these variables.
+ *
+ * Placeholder resolution:
+ *   resolvePlaceholders() handles two delimiter styles:
+ *   - ##varName## — resolved FIRST. Used in camunda:inputParameter values where Camunda's
+ *                   JUEL would eagerly evaluate ${...} at task entry before the delegate runs,
+ *                   causing "Cannot resolve identifier" errors for variables not yet set
+ *                   (e.g. ##contextMinioPath##, ##currentAgentId##, ##currentRunCount##).
+ *   - ${varName}  — resolved SECOND. Standard process variable interpolation for variables
+ *                   that exist at task entry (e.g. ${TicketID}, ${tenantId}).
  *
  * minioJson input type:
  *   Downloads a file directly from MinIO and parses it as JSON. Supports both:
@@ -107,10 +116,10 @@ public class GenericAgentDelegate implements JavaDelegate {
         // ── Run count tracking ─────────────────────────────────────────────────
         // Increments a per-agent counter each time this agent is executed.
         // Exposed as `currentRunCount` so outputMapping targetPath values can
-        // reference ${currentRunCount} to version MinIO output files per run.
+        // reference ##currentRunCount## to version MinIO output files per run.
         // Key is scoped to the agent ID so parallel agents don't collide.
         // HealthClaim is unaffected — its outputMapping targetPaths are hardcoded
-        // strings that do not reference ${currentRunCount}.
+        // strings that do not reference ##currentRunCount##.
         String runCountKey   = currentAgentId + "_runCount";
         Object existingCount = execution.getVariable(runCountKey);
         int currentRunCount  = (existingCount instanceof Integer) ? (Integer) existingCount : 0;
@@ -209,7 +218,8 @@ public class GenericAgentDelegate implements JavaDelegate {
 
         // 9. Unified Output Mapping (3b)
         String outputMapStr = (outputMapping != null) ? (String) outputMapping.getValue(execution) : "{}";
-        processOutputMapping(fullResultJson, outputMapStr, tenantId, execution, props);
+        String resolvedOutputMapStr = resolvePlaceholders(outputMapStr, execution, props);
+        processOutputMapping(fullResultJson, resolvedOutputMapStr, tenantId, execution, props);
 
         log.info("=== Generic Agent Delegate Completed ===");
     }
@@ -230,7 +240,7 @@ public class GenericAgentDelegate implements JavaDelegate {
      *
      *  ── For storeIn = "objectStorage" ───────────────────────────────────────
      *  storageType    (optional)  "minio"                              default: "minio"
-     *  targetPath     (required)  MinIO destination path. Supports ${var} placeholders.
+     *  targetPath     (required)  MinIO destination path. Supports ${var} and ##var## placeholders.
      *  targetVarName  (optional)  Process variable receiving the resolved MinIO path.
      *                             Defaults to "{outputKey}_minioPath".
      *
@@ -614,8 +624,36 @@ public class GenericAgentDelegate implements JavaDelegate {
         }
     }
 
+    /**
+     * Resolves placeholders in two passes:
+     *
+     * Pass 1 — ##varName## delimiters:
+     *   Used in camunda:inputParameter values where Camunda JUEL eagerly evaluates ${...}
+     *   at task entry — before the delegate runs. Variables like currentAgentId, currentRunCount,
+     *   and contextMinioPath are not yet set at that point, causing "Cannot resolve identifier"
+     *   errors. Using ##...## bypasses JUEL and lets this delegate resolve them at runtime.
+     *
+     * Pass 2 — ${varName} delimiters:
+     *   Standard resolution for variables that exist at task entry (e.g. TicketID, tenantId).
+     *   Also handles appproperties.* and map access with [varName] syntax.
+     */
     private String resolvePlaceholders(String input, DelegateExecution execution, Properties props) {
         if (input == null) return null;
+
+        // Pass 1: resolve ##varName## — deferred placeholders safe from JUEL eager evaluation
+        Pattern hashPattern = Pattern.compile("##([^#]+)##");
+        Matcher hashMatcher = hashPattern.matcher(input);
+        StringBuffer hashSb = new StringBuffer();
+        while (hashMatcher.find()) {
+            String varName = hashMatcher.group(1).trim();
+            Object val = execution.getVariable(varName);
+            String replacement = (val != null) ? val.toString() : "##" + varName + "##";
+            hashMatcher.appendReplacement(hashSb, Matcher.quoteReplacement(replacement));
+        }
+        hashMatcher.appendTail(hashSb);
+        input = hashSb.toString();
+
+        // Pass 2: resolve ${...} — standard process variable interpolation
         Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
         Matcher matcher = pattern.matcher(input);
         StringBuffer sb = new StringBuffer();
