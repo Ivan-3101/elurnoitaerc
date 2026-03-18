@@ -124,20 +124,74 @@ public class OrchestratorDelegate implements JavaDelegate {
         int              retryCount = toIntVar(execution, "retryCount", 0);
         JSONObject       context    = downloadContext(storage, contextPath);
 
+//        // ── RETURN FROM USER TASK ────────────────────────────────────────────
+//        String userAnswers = getStringVar(execution, "userAnswers");
+//        if (userAnswers != null && !userAnswers.trim().isEmpty()) {
+//            log.info("Returning from User Task | stage={}", currentStepIndex);
+//
+//            // Parse user answers
+//            JSONObject answersObj;
+//            try {
+//                answersObj = new JSONObject(userAnswers);
+//            } catch (Exception e) {
+//                log.warn("userAnswers is not valid JSON — wrapping as raw string");
+//                answersObj = new JSONObject();
+//                answersObj.put("raw", userAnswers);
+//            }
+//
+//            // Append USER_TASK entry to interaction history
+//            JSONArray history = context.optJSONArray("interaction_history");
+//            if (history == null) history = new JSONArray();
+//
+//            JSONObject userEntry = new JSONObject();
+//            userEntry.put("stage",          currentStepIndex);
+//            userEntry.put("agentId",        getStringVar(execution, "currentAgentId"));
+//            userEntry.put("from",           "USER_TASK");
+//            userEntry.put("userAnswers",    answersObj);
+//            userEntry.put("questions",      toJsonArray(execution.getVariable("agentQuestions")));
+//            userEntry.put("missing_fields", toJsonArray(execution.getVariable("agentMissingFields")));
+//            history.put(userEntry);
+//            context.put("interaction_history", history);
+//
+//            // Clear userAnswers so next Orchestrator run doesn't re-enter this branch
+//            execution.setVariable("userAnswers", null);
+//
+//            uploadContext(storage, contextPath, context);
+//
+//            execution.setVariable("orchestratorAction", "RETRY_STEP");
+//            execution.setVariable("workflowStatus",     "RUNNING");
+//            log.info("User Task return processed | action=RETRY_STEP | stage={}", currentStepIndex);
+//
+//            log.info("=== OrchestratorDelegate Complete | action=RETRY_STEP ===");
+//            return;
+//        }
+
         // ── RETURN FROM USER TASK ────────────────────────────────────────────
-        String userAnswers = getStringVar(execution, "userAnswers");
-        if (userAnswers != null && !userAnswers.trim().isEmpty()) {
+        // The Generated Task Form submits the user's answer as a process variable
+        // named "action" (the form field id). Return is detected by this variable
+        // being non-null and non-empty when the Orchestrator runs after the User Task.
+        String actionValue = getStringVar(execution, "action");
+        if (actionValue != null && !actionValue.trim().isEmpty()) {
             log.info("Returning from User Task | stage={}", currentStepIndex);
 
-            // Parse user answers
-            JSONObject answersObj;
+            // Resolve the correct field key from agentMissingFields[0] so the answer
+            // is keyed correctly in interaction_history (e.g. "execution_mode")
+            String missingFieldsRaw = getStringVar(execution, "agentMissingFields");
+            String fieldKey = "user_answer"; // safe fallback
             try {
-                answersObj = new JSONObject(userAnswers);
+                JSONArray mf = new JSONArray(missingFieldsRaw != null ? missingFieldsRaw : "[]");
+                if (mf.length() > 0) fieldKey = mf.getString(0);
             } catch (Exception e) {
-                log.warn("userAnswers is not valid JSON — wrapping as raw string");
-                answersObj = new JSONObject();
-                answersObj.put("raw", userAnswers);
+                log.warn("Could not parse agentMissingFields — using fallback key: {}", e.getMessage());
             }
+
+            JSONObject answersObj = new JSONObject();
+            answersObj.put(fieldKey, actionValue);
+            log.debug("User answer: fieldKey='{}' value='{}'", fieldKey, actionValue);
+
+            // Clear the action variable so it does not re-trigger this branch
+            // on the next Orchestrator run after the agent processes the answer
+            execution.setVariable("action", null);
 
             // Append USER_TASK entry to interaction history
             JSONArray history = context.optJSONArray("interaction_history");
@@ -153,14 +207,12 @@ public class OrchestratorDelegate implements JavaDelegate {
             history.put(userEntry);
             context.put("interaction_history", history);
 
-            // Clear userAnswers so next Orchestrator run doesn't re-enter this branch
-            execution.setVariable("userAnswers", null);
-
             uploadContext(storage, contextPath, context);
 
             execution.setVariable("orchestratorAction", "RETRY_STEP");
             execution.setVariable("workflowStatus",     "RUNNING");
-            log.info("User Task return processed | action=RETRY_STEP | stage={}", currentStepIndex);
+            log.info("User Task return processed | fieldKey={} | action=RETRY_STEP | stage={}",
+                    fieldKey, currentStepIndex);
 
             log.info("=== OrchestratorDelegate Complete | action=RETRY_STEP ===");
             return;
@@ -226,9 +278,33 @@ public class OrchestratorDelegate implements JavaDelegate {
                 break;
             }
 
+//            // ── GO_USER_TASK ─────────────────────────────────────────────────
+//            case "GO_USER_TASK": {
+//                uploadContext(storage, contextPath, context);
+//                execution.setVariable("orchestratorAction", "GO_USER_TASK");
+//                execution.setVariable("workflowStatus",     "AWAITING_USER");
+//                log.info("Agent requested user input | action=GO_USER_TASK | stage={}", currentStepIndex);
+//                break;
+//            }
+
             // ── GO_USER_TASK ─────────────────────────────────────────────────
             case "GO_USER_TASK": {
                 uploadContext(storage, contextPath, context);
+
+                // Extract questions[0] from agentQuestions and expose as a plain
+                // String process variable so the Generated Task Form label can
+                // resolve it via ${userTaskQuestion}
+                String aqRaw = getStringVar(execution, "agentQuestions");
+                String userTaskQuestion = "";
+                try {
+                    JSONArray aqArr = new JSONArray(aqRaw != null ? aqRaw : "[]");
+                    if (aqArr.length() > 0) userTaskQuestion = aqArr.getString(0);
+                } catch (Exception e) {
+                    log.warn("Could not parse agentQuestions for userTaskQuestion: {}", e.getMessage());
+                }
+                execution.setVariable("userTaskQuestion", userTaskQuestion);
+                log.debug("Set userTaskQuestion='{}'", userTaskQuestion);
+
                 execution.setVariable("orchestratorAction", "GO_USER_TASK");
                 execution.setVariable("workflowStatus",     "AWAITING_USER");
                 log.info("Agent requested user input | action=GO_USER_TASK | stage={}", currentStepIndex);

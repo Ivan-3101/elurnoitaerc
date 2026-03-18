@@ -102,7 +102,12 @@
         <bpmn:outgoing>Flow_1vty2u8</bpmn:outgoing>
         <bpmn:outgoing>Flow_148cdqt</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:userTask id="Activity_13uk4oo" name="x.UserTask" camunda:formKey="embedded:app:forms/agent-user-task-form.html">
+      <bpmn:userTask id="Activity_13uk4oo" name="x.UserTask">
+        <bpmn:extensionElements>
+          <camunda:formData>
+            <camunda:formField id="action" label="${userTaskQuestion}" type="string" />
+          </camunda:formData>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_1vty2u8</bpmn:incoming>
         <bpmn:outgoing>Flow_0rw7fbe</bpmn:outgoing>
       </bpmn:userTask>
