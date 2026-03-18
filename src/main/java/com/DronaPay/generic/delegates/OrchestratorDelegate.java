@@ -170,7 +170,8 @@ public class OrchestratorDelegate implements JavaDelegate {
         // The Generated Task Form submits the user's answer as a process variable
         // named "action" (the form field id). Return is detected by this variable
         // being non-null and non-empty when the Orchestrator runs after the User Task.
-        String actionValue = getStringVar(execution, "action");
+//        String actionValue = getStringVar(execution, "action");
+        String actionValue = getStringVar(execution, "Action1");
         if (actionValue != null && !actionValue.trim().isEmpty()) {
             log.info("Returning from User Task | stage={}", currentStepIndex);
 
@@ -191,7 +192,8 @@ public class OrchestratorDelegate implements JavaDelegate {
 
             // Clear the action variable so it does not re-trigger this branch
             // on the next Orchestrator run after the agent processes the answer
-            execution.setVariable("action", null);
+//            execution.setVariable("action", null);
+            execution.setVariable("Action1", null);
 
             // Append USER_TASK entry to interaction history
             JSONArray history = context.optJSONArray("interaction_history");
