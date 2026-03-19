@@ -106,7 +106,7 @@
         <bpmn:extensionElements>
           <camunda:formData>
             <camunda:formField id="Action1" label="${userTaskQuestion}" type="string" defaultValue="" />
-            <camunda:formField id="Action2" label="Question" type="string" defaultValue="${userTaskQuestion}">
+            <camunda:formField id="Action2" label="Questions" type="string" defaultValue="${allAgentQuestions}">
               <camunda:validation />
             </camunda:formField>
           </camunda:formData>
