@@ -105,7 +105,10 @@
       <bpmn:userTask id="Activity_13uk4oo" name="x.UserTask">
         <bpmn:extensionElements>
           <camunda:formData>
-            <camunda:formField id="Action1" label="${userTaskQuestion}" type="string" />
+            <camunda:formField id="Action1" label="${userTaskQuestion}" type="string" defaultValue="" />
+            <camunda:formField id="Action2" label="Question" type="string" defaultValue="${userTaskQuestion}">
+              <camunda:validation />
+            </camunda:formField>
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1vty2u8</bpmn:incoming>
