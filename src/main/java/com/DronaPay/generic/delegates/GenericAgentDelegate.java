@@ -492,10 +492,39 @@ public class GenericAgentDelegate implements JavaDelegate {
                                 path, resolvedTargetPath, targetVarName);
 
                     } else {
+//                        // ── PATTERN A ──────────────────────────────────────────────────────
+//                        execution.setVariable(outputKey, val);
+//                        log.info("Output mapping (processVariable): set '{}' from path '{}' = '{}'",
+//                                outputKey, path, val);
+
                         // ── PATTERN A ──────────────────────────────────────────────────────
-                        execution.setVariable(outputKey, val);
-                        log.info("Output mapping (processVariable): set '{}' from path '{}' = '{}'",
-                                outputKey, path, val);
+                        // agentQuestions accumulates across all agent runs instead of overwriting.
+                        // All other keys use normal last-write-wins behaviour.
+                        if ("agentQuestions".equals(outputKey)) {
+                            String newQsStr = val != null ? val.toString() : "[]";
+                            try {
+                                JSONArray newQs = new JSONArray(newQsStr);
+                                if (newQs.length() > 0) {
+                                    String existingRaw = (String) execution.getVariable("agentQuestions");
+                                    JSONArray existing = new JSONArray(existingRaw != null ? existingRaw : "[]");
+                                    for (int qi = 0; qi < newQs.length(); qi++) {
+                                        existing.put(newQs.get(qi));
+                                    }
+                                    execution.setVariable("agentQuestions", existing.toString());
+                                    log.info("Output mapping (processVariable): accumulated 'agentQuestions' += {} item(s), total={}",
+                                            newQs.length(), existing.length());
+                                } else {
+                                    log.debug("Output mapping (processVariable): 'agentQuestions' from agent is empty — keeping accumulated value");
+                                }
+                            } catch (Exception e) {
+                                log.warn("Could not parse agentQuestions for accumulation — falling back to overwrite: {}", e.getMessage());
+                                execution.setVariable("agentQuestions", val);
+                            }
+                        } else {
+                            execution.setVariable(outputKey, val);
+                            log.info("Output mapping (processVariable): set '{}' from path '{}' = '{}'",
+                                    outputKey, path, val);
+                        }
                     }
                 }
 

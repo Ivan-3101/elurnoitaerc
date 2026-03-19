@@ -188,7 +188,27 @@ public class OrchestratorDelegate implements JavaDelegate {
 
             JSONObject answersObj = new JSONObject();
             answersObj.put(fieldKey, actionValue);
+//            log.debug("User answer: fieldKey='{}' value='{}'", fieldKey, actionValue);
+//
+//            // Clear the action variable so it does not re-trigger this branch
+//            // on the next Orchestrator run after the agent processes the answer
+////            execution.setVariable("action", null);
+//            execution.setVariable("Action1", null);
+
             log.debug("User answer: fieldKey='{}' value='{}'", fieldKey, actionValue);
+
+            // Accumulate this answer into the userAnswers process variable (array of answer objects).
+            String existingAnswersRaw = getStringVar(execution, "userAnswers");
+            JSONArray allAnswers;
+            try {
+                allAnswers = new JSONArray(existingAnswersRaw != null ? existingAnswersRaw : "[]");
+            } catch (Exception e) {
+                log.warn("Could not parse existing userAnswers — starting fresh: {}", e.getMessage());
+                allAnswers = new JSONArray();
+            }
+            allAnswers.put(answersObj);
+            execution.setVariable("userAnswers", allAnswers.toString());
+            log.debug("Accumulated userAnswers: {} total answer(s)", allAnswers.length());
 
             // Clear the action variable so it does not re-trigger this branch
             // on the next Orchestrator run after the agent processes the answer
