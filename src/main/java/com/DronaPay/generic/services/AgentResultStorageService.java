@@ -11,9 +11,12 @@ import java.util.Map;
 @Slf4j
 public class AgentResultStorageService {
 
-    public static String storeAgentResult(String tenantId, String ticketId,
-                                          String stageName, String filename,
-                                          Map<String, Object> result) throws Exception {
+//    public static String storeAgentResult(String tenantId, String ticketId,
+//                                          String stageName, String filename,
+//                                          Map<String, Object> result) throws Exception {
+public static String storeAgentResult(String tenantId, String workflowKey, String ticketId,
+                                      String stageName, String filename,
+                                      Map<String, Object> result) throws Exception {
 
         StorageProvider storage = ObjectStorageService.getStorageProvider(tenantId);
 
@@ -21,9 +24,16 @@ public class AgentResultStorageService {
                 ? filename.replaceAll("[^a-zA-Z0-9.-]", "_")
                 : "consolidated";
 
-        String pathPattern = "{tenantId}/HealthClaim/{ticketId}/{stageName}/{filename}.json";
+//        String pathPattern = "{tenantId}/HealthClaim/{ticketId}/{stageName}/{filename}.json";
+//        String storagePath = pathPattern
+//                .replace("{tenantId}", tenantId)
+//                .replace("{ticketId}", ticketId)
+//                .replace("{stageName}", stageName)
+//                .replace("{filename}", safeFilename);
+        String pathPattern = "{tenantId}/{workflowKey}/{ticketId}/{stageName}/{filename}.json";
         String storagePath = pathPattern
                 .replace("{tenantId}", tenantId)
+                .replace("{workflowKey}", workflowKey)   // ← add this
                 .replace("{ticketId}", ticketId)
                 .replace("{stageName}", stageName)
                 .replace("{filename}", safeFilename);

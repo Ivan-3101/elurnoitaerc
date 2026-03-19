@@ -196,8 +196,13 @@ public class GenericAgentDelegate implements JavaDelegate {
         String resultFileName = (filename != null && !filename.isEmpty())
                 ? filename : currentAgentId + "_result_" + System.currentTimeMillis();
 
+//        String minioPath = AgentResultStorageService.storeAgentResult(
+//                tenantId, ticketId, stageName, resultFileName, resultMap);
+        String workflowKey = execution.getVariable("workflowKey") != null
+                ? String.valueOf(execution.getVariable("workflowKey"))
+                : "Generic";
         String minioPath = AgentResultStorageService.storeAgentResult(
-                tenantId, ticketId, stageName, resultFileName, resultMap);
+                tenantId, workflowKey, ticketId, stageName, resultFileName, resultMap);
 
         execution.setVariable(currentAgentId + "_MinioPath", minioPath);
         log.info("Agent Result stored: {}", minioPath);

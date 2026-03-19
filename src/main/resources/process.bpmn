@@ -109,6 +109,7 @@
             <camunda:formField id="Action2" label="Questions" type="string" defaultValue="${allAgentQuestions}">
               <camunda:validation />
             </camunda:formField>
+            <camunda:formField id="Action3" label="Rule" type="string" defaultValue="${finalRule}" />
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1vty2u8</bpmn:incoming>
@@ -173,7 +174,6 @@
             <camunda:inputParameter name="stage6InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
             <camunda:inputParameter name="stage6OutputMapping">{"lastAgentResult":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse"},"agentAction":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.action"},"agentStatus":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.status"},"agentQuestions":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.questions"},"agentMissingFields":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.missing_fields"},"agentConfidence":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.confidence"},"agentOutput":{"storeIn":"objectStorage","storageType":"minio","dataType":"json","path":"$.rawResponse","targetPath":"${tenantId}/RuleCreation/${TicketID}/Threshold Naming/##currentAgentId##_output_run##currentRunCount##.json","targetVarName":"stage6AgentOutputMinioPath"}}</camunda:inputParameter>
             <camunda:inputParameter name="stage7InputParams">[{"key":"context","type":"minioJson","value":"##contextMinioPath##","sourceJsonPath":"$"}]</camunda:inputParameter>
-            <camunda:inputParameter name="stage7OutputMapping">{"lastAgentResult":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse"},"agentAction":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.action"},"agentStatus":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.status"},"agentQuestions":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.questions"},"agentMissingFields":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.missing_fields"},"agentConfidence":{"storeIn":"processVariable","dataType":"string","path":"$.rawResponse.confidence"},"agentOutput":{"storeIn":"objectStorage","storageType":"minio","dataType":"json","path":"$.rawResponse","targetPath":"${tenantId}/RuleCreation/${TicketID}/Wiring/##currentAgentId##_output_run##currentRunCount##.json","targetVarName":"stage7AgentOutputMinioPath"}}</camunda:inputParameter>
             <camunda:inputParameter name="stage1Type">execution-mode</camunda:inputParameter>
             <camunda:inputParameter name="stage1AgentId">execution-mode-agent</camunda:inputParameter>
             <camunda:inputParameter name="stage1AllowUserInput">true</camunda:inputParameter>
@@ -209,6 +209,61 @@
             <camunda:inputParameter name="stage4AllowUserInput">true</camunda:inputParameter>
             <camunda:inputParameter name="stage4MaxRetries">3</camunda:inputParameter>
             <camunda:inputParameter name="stage4OnFailure">END</camunda:inputParameter>
+            <camunda:inputParameter name="stage7OutputMapping">{
+  "lastAgentResult": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse"
+  },
+  "agentAction": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.action"
+  },
+  "agentStatus": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.status"
+  },
+  "agentQuestions": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.questions"
+  },
+  "agentMissingFields": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.missing_fields"
+  },
+  "agentConfidence": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.confidence"
+  },
+  "agentOutput": {
+    "storeIn": "objectStorage",
+    "storageType": "minio",
+    "dataType": "json",
+    "path": "$.rawResponse",
+    "targetPath": "${tenantId}/RuleCreation/${TicketID}/Wiring/##currentAgentId##_output_run##currentRunCount##.json",
+    "targetVarName": "stage7AgentOutputMinioPath"
+  },
+  "finalRule": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.output.vcruledetail"
+  },
+  "finalWorkflowName": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.output.workflow_name"
+  },
+  "finalRuleRemark": {
+    "storeIn": "processVariable",
+    "dataType": "string",
+    "path": "$.rawResponse.output.remark"
+  }
+}</camunda:inputParameter>
           </camunda:inputOutput>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0vgn3zw</bpmn:incoming>
