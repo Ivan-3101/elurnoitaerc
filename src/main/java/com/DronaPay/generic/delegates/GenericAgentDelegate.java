@@ -546,15 +546,52 @@ public class GenericAgentDelegate implements JavaDelegate {
                         log.info("Output mapping (processVariable): set '{}' from path '{}' = '{}'",
                                 outputKey, path, val);
 
+//                        if ("agentQuestions".equals(outputKey)) {
+//                            String newQsStr = val != null ? val.toString() : "[]";
+//                            try {
+//                                JSONArray newQs = new JSONArray(newQsStr);
+//                                if (newQs.length() > 0) {
+//                                    String existingRaw = (String) execution.getVariable("allAgentQuestions");
+//                                    JSONArray allQs = new JSONArray(existingRaw != null ? existingRaw : "[]");
+//                                    for (int qi = 0; qi < newQs.length(); qi++) {
+//                                        allQs.put(newQs.get(qi));
+//                                    }
+//                                    execution.setVariable("allAgentQuestions", allQs.toString());
+//                                    log.debug("Accumulated 'allAgentQuestions' += {} item(s), total={}",
+//                                            newQs.length(), allQs.length());
+//                                }
+//                            } catch (Exception e) {
+//                                log.warn("Could not accumulate into allAgentQuestions — skipping: {}", e.getMessage());
+//                            }
+//                        }
+
+
                         if ("agentQuestions".equals(outputKey)) {
                             String newQsStr = val != null ? val.toString() : "[]";
                             try {
                                 JSONArray newQs = new JSONArray(newQsStr);
                                 if (newQs.length() > 0) {
+                                    // Read missing_fields directly from the same response so we can
+                                    // zip each question with its field key — matching the userAnswers format.
+                                    JSONArray missingFields;
+                                    try {
+                                        Object mfRaw = responseDocumentContext.read("$.rawResponse.missing_fields");
+                                        missingFields = new JSONArray(mfRaw != null ? mfRaw.toString() : "[]");
+                                    } catch (Exception e) {
+                                        log.warn("Could not read missing_fields from response for allAgentQuestions zipping — using positional keys: {}", e.getMessage());
+                                        missingFields = new JSONArray();
+                                    }
+
                                     String existingRaw = (String) execution.getVariable("allAgentQuestions");
                                     JSONArray allQs = new JSONArray(existingRaw != null ? existingRaw : "[]");
                                     for (int qi = 0; qi < newQs.length(); qi++) {
-                                        allQs.put(newQs.get(qi));
+                                        String question = newQs.optString(qi, "");
+                                        String fieldKey = (qi < missingFields.length())
+                                                ? missingFields.optString(qi, "field_" + qi)
+                                                : "field_" + qi;
+                                        JSONObject entry = new JSONObject();
+                                        entry.put(fieldKey, question);
+                                        allQs.put(entry);
                                     }
                                     execution.setVariable("allAgentQuestions", allQs.toString());
                                     log.debug("Accumulated 'allAgentQuestions' += {} item(s), total={}",
