@@ -108,6 +108,12 @@ public class OrchestratorDelegate implements JavaDelegate {
             execution.setVariable("totalSteps",       totalSteps);
             execution.setVariable("workflowStatus",   "RUNNING");
 
+
+//            setting these to null since we use it in the user task to avoid form failure
+            execution.setVariable("finalRule",         "NA");
+            execution.setVariable("finalWorkflowName", "NA");
+            execution.setVariable("finalRuleRemark",   "NA");
+
             setCurrentStepVars(execution, steps.get(0), 0, contextPath);
             execution.setVariable("orchestratorAction", "CONTINUE");
 

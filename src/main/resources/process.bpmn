@@ -110,6 +110,7 @@
               <camunda:validation />
             </camunda:formField>
             <camunda:formField id="Action3" label="Rule" type="string" defaultValue="${finalRule}" />
+            <camunda:formField id="Action4" label="All Answers" type="string" defaultValue="${userAnswers}" />
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1vty2u8</bpmn:incoming>
