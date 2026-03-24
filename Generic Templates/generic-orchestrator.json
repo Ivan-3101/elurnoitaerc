@@ -2,9 +2,9 @@
   {
     "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
     "name": "Orchestrator",
-    "id": "com.dronapay.generic.orchestrator",
+    "id": "com.DronaPay.generic.orchestrator",
     "appliesTo": ["bpmn:ServiceTask"],
-    "description": "Rule Creation Orchestrator. Configure up to 7 sequential agent stages.",
+    "description": "Configure up to 7 sequential agent stages.",
     "groups": [
       { "id": "stage-1", "label": "Stage 1" },
       { "id": "stage-2", "label": "Stage 2" },
@@ -24,18 +24,9 @@
       {
         "label": "Type",
         "group": "stage-1",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Execution Mode). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage1Type" }
       },
       {
@@ -96,18 +87,9 @@
       {
         "label": "Type",
         "group": "stage-2",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Product Class). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage2Type" }
       },
       {
@@ -168,18 +150,9 @@
       {
         "label": "Type",
         "group": "stage-3",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Transaction Parameters). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage3Type" }
       },
       {
@@ -240,18 +213,9 @@
       {
         "label": "Type",
         "group": "stage-4",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Master Parameters). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage4Type" }
       },
       {
@@ -312,18 +276,9 @@
       {
         "label": "Type",
         "group": "stage-5",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Profile Parameters). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage5Type" }
       },
       {
@@ -384,18 +339,9 @@
       {
         "label": "Type",
         "group": "stage-6",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Threshold & Naming). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage6Type" }
       },
       {
@@ -456,18 +402,9 @@
       {
         "label": "Type",
         "group": "stage-7",
-        "type": "Dropdown",
-        "value": "none",
-        "choices": [
-          { "name": "— None —",               "value": "none"               },
-          { "name": "Execution Mode",          "value": "execution-mode"     },
-          { "name": "Product Class",           "value": "product-class"      },
-          { "name": "Transaction Parameters",  "value": "txn-parameters"     },
-          { "name": "Master Parameters",       "value": "master-parameters"  },
-          { "name": "Profile Parameters",      "value": "profile-parameters" },
-          { "name": "Threshold & Naming",      "value": "threshold-naming"   },
-          { "name": "Wiring",                  "value": "wiring"             }
-        ],
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Wiring). Leave as NA to skip this stage slot.",
         "binding": { "type": "camunda:inputParameter", "name": "stage7Type" }
       },
       {

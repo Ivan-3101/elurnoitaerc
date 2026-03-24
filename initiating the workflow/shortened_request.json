@@ -3,14 +3,6 @@
     "userInput": {
       "value": "Block UPI transactions above 5000",
       "type": "String"
-    },
-    "holder_name": {
-      "value": "Ashish_Singhal",
-      "type": "String"
-    },
-    "policy_id": {
-      "value": "HDFCDL123678BK",
-      "type": "String"
     }
   },
   "businessKey": "{{$randomUUID}}"

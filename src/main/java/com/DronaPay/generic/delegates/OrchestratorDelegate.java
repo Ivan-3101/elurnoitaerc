@@ -412,8 +412,8 @@ public class OrchestratorDelegate implements JavaDelegate {
         List<JSONObject> steps = new ArrayList<>();
         for (int i = 1; i <= MAX_STAGE_SLOTS; i++) {
             String type = getStringVar(execution, "stage" + i + "Type");
-            if (type == null || type.equalsIgnoreCase("none") || type.equalsIgnoreCase("NA")) continue;
-
+//            if (type == null || type.equalsIgnoreCase("none") || type.equalsIgnoreCase("NA")) continue;
+            if (type == null || type.isBlank() || type.equalsIgnoreCase("NA")) continue;
             JSONObject step = new JSONObject();
             step.put("stageType",      type);
             step.put("agentId",        getStringVar(execution, "stage" + i + "AgentId"));
