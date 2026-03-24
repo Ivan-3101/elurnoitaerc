@@ -106,11 +106,8 @@
         <bpmn:extensionElements>
           <camunda:formData>
             <camunda:formField id="Action1" label="${userTaskQuestion}" type="string" defaultValue="" />
-            <camunda:formField id="Action2" label="Questions" type="string" defaultValue="${allAgentQuestions}">
-              <camunda:validation />
-            </camunda:formField>
-            <camunda:formField id="Action3" label="Rule" type="string" defaultValue="${finalRule}" />
-            <camunda:formField id="Action4" label="All Answers" type="string" defaultValue="${userAnswers}" />
+            <camunda:formField id="Action3" label="All Answers" type="string" defaultValue="${userAnswers}" />
+            <camunda:formField id="Action2" label="All Questions" type="string" defaultValue="${allAgentQuestions}" />
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1vty2u8</bpmn:incoming>

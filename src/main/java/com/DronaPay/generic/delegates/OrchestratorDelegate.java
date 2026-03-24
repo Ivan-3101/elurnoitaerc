@@ -331,6 +331,9 @@ public class OrchestratorDelegate implements JavaDelegate {
                 } catch (Exception e) {
                     log.warn("Could not parse agentQuestions for userTaskQuestion: {}", e.getMessage());
                 }
+
+                log.debug("allAgentQuestions at GO_USER_TASK = '{}'",
+                        execution.getVariable("allAgentQuestions"));
                 execution.setVariable("userTaskQuestion", userTaskQuestion);
                 log.debug("Set userTaskQuestion='{}'", userTaskQuestion);
 
