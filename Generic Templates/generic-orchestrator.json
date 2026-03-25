@@ -1,7 +1,7 @@
 [
   {
     "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
-    "name": "Orchestrator",
+    "name": "Generic Orchestrator",
     "id": "com.DronaPay.generic.orchestrator",
     "appliesTo": ["bpmn:ServiceTask"],
     "description": "Configure up to 7 sequential agent stages.",
@@ -32,8 +32,18 @@
       {
         "label": "Agent ID",
         "group": "stage-1",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage1AgentId" }
       },
       {
@@ -95,8 +105,18 @@
       {
         "label": "Agent ID",
         "group": "stage-2",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage2AgentId" }
       },
       {
@@ -158,8 +178,18 @@
       {
         "label": "Agent ID",
         "group": "stage-3",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage3AgentId" }
       },
       {
@@ -221,8 +251,18 @@
       {
         "label": "Agent ID",
         "group": "stage-4",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage4AgentId" }
       },
       {
@@ -284,8 +324,18 @@
       {
         "label": "Agent ID",
         "group": "stage-5",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage5AgentId" }
       },
       {
@@ -347,8 +397,18 @@
       {
         "label": "Agent ID",
         "group": "stage-6",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage6AgentId" }
       },
       {
@@ -410,8 +470,18 @@
       {
         "label": "Agent ID",
         "group": "stage-7",
-        "type": "String",
+        "type": "Dropdown",
         "value": "NA",
+        "choices": [
+          { "name": "NA",                          "value": "NA"                          },
+          { "name": "execution-mode-agent",        "value": "execution-mode-agent"        },
+          { "name": "product-class-agent",         "value": "product-class-agent"         },
+          { "name": "transaction-parameter-agent", "value": "transaction-parameter-agent" },
+          { "name": "master-parameter-agent",      "value": "master-parameter-agent"      },
+          { "name": "profile-parameter-agent",     "value": "profile-parameter-agent"     },
+          { "name": "threshold-naming-agent",      "value": "threshold-naming-agent"      },
+          { "name": "wiring-agent",                "value": "wiring-agent"                }
+        ],
         "binding": { "type": "camunda:inputParameter", "name": "stage7AgentId" }
       },
       {
