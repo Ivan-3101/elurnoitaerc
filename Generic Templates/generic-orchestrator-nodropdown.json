@@ -1,0 +1,468 @@
+[
+  {
+    "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+    "name": "Generic Orchestrator NO DROPDOWN",
+    "id": "com.DronaPay.generic.orchestrator.no.dropdown",
+    "appliesTo": ["bpmn:ServiceTask"],
+    "description": "Configure sequential agent stages.",
+    "groups": [
+      { "id": "stage-1", "label": "Stage 1" },
+      { "id": "stage-2", "label": "Stage 2" },
+      { "id": "stage-3", "label": "Stage 3" },
+      { "id": "stage-4", "label": "Stage 4" },
+      { "id": "stage-5", "label": "Stage 5" },
+      { "id": "stage-6", "label": "Stage 6" },
+      { "id": "stage-7", "label": "Stage 7" }
+    ],
+    "properties": [
+      {
+        "type": "Hidden",
+        "value": "com.DronaPay.generic.delegates.OrchestratorDelegate",
+        "binding": { "type": "property", "name": "camunda:class" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-1",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Execution Mode). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage1Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-1",
+
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage1AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-1",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage1AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-1",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage1MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-1",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage1OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-1",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage1InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-1",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Execution Mode/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage1AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage1OutputMapping" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-2",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Product Class). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage2Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-2",
+
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage2AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-2",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage2AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-2",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage2MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-2",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage2OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-2",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage2InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-2",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Product Class/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage2AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage2OutputMapping" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-3",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Transaction Parameters). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage3Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-3",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage3AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-3",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage3AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-3",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage3MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-3",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage3OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-3",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage3InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-3",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Txn Parameters/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage3AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage3OutputMapping" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-4",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Master Parameters). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage4Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-4",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage4AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-4",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage4AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-4",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage4MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-4",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage4OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-4",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage4InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-4",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Master Parameters/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage4AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage4OutputMapping" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-5",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Profile Parameters). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage5Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-5",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage5AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-5",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage5AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-5",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage5MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-5",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage5OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-5",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage5InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-5",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Profile Parameters/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage5AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage5OutputMapping" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-6",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Threshold & Naming). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage6Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-6",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage6AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-6",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage6AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-6",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage6MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-6",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage6OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-6",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage6InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-6",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Threshold Naming/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage6AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage6OutputMapping" }
+      },
+
+      {
+        "label": "Type",
+        "group": "stage-7",
+        "type": "String",
+        "value": "NA",
+        "description": "Enter a stage name (e.g. Wiring). Leave as NA to skip this stage slot.",
+        "binding": { "type": "camunda:inputParameter", "name": "stage7Type" }
+      },
+      {
+        "label": "Agent ID",
+        "group": "stage-7",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage7AgentId" }
+      },
+      {
+        "label": "Allow User Input",
+        "group": "stage-7",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "true",  "value": "true"  },
+          { "name": "false", "value": "false" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage7AllowUserInput" }
+      },
+      {
+        "label": "Max Retries",
+        "group": "stage-7",
+        "type": "String",
+        "value": "NA",
+        "binding": { "type": "camunda:inputParameter", "name": "stage7MaxRetries" }
+      },
+      {
+        "label": "On Failure",
+        "group": "stage-7",
+        "type": "Dropdown",
+        "value": "NA",
+        "choices": [
+          { "name": "NA",    "value": "NA"    },
+          { "name": "END",   "value": "END"   },
+          { "name": "RETRY", "value": "RETRY" }
+        ],
+        "binding": { "type": "camunda:inputParameter", "name": "stage7OnFailure" }
+      },
+      {
+        "label": "Input Parameters",
+        "group": "stage-7",
+        "type": "Text",
+        "description": "JSON array defining the 'data' payload sent to DIA. Default fetches context.json from MinIO. Do not change unless this stage requires additional inputs.",
+        "value": "[{\"key\":\"context\",\"type\":\"minioJson\",\"value\":\"##contextMinioPath##\",\"sourceJsonPath\":\"$\"}]",
+        "binding": { "type": "camunda:inputParameter", "name": "stage7InputParams" }
+      },
+      {
+        "label": "Output Mapping",
+        "group": "stage-7",
+        "type": "Text",
+        "description": "GenericAgentDelegate object format. lastAgentResult is mandatory — OrchestratorDelegate reads it on every loop iteration. ##currentAgentId## and ##currentRunCount## are resolved at runtime by GenericAgentDelegate to avoid JUEL eager evaluation errors.",
+        "value": "{\"lastAgentResult\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse\"},\"agentAction\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.action\"},\"agentStatus\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.status\"},\"agentQuestions\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.questions\"},\"agentMissingFields\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.missing_fields\"},\"agentConfidence\":{\"storeIn\":\"processVariable\",\"dataType\":\"string\",\"path\":\"$.rawResponse.confidence\"},\"agentOutput\":{\"storeIn\":\"objectStorage\",\"storageType\":\"minio\",\"dataType\":\"json\",\"path\":\"$.rawResponse\",\"targetPath\":\"${tenantId}/RuleCreation/${TicketID}/Wiring/##currentAgentId##_output_run##currentRunCount##.json\",\"targetVarName\":\"stage7AgentOutputMinioPath\"}}",
+        "binding": { "type": "camunda:inputParameter", "name": "stage7OutputMapping" }
+      }
+    ]
+  }
+]
